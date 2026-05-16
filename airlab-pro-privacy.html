@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Politika e Privatësisë — AirLab Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#080f1e;--navy-2:#0d1628;--navy-3:#111d35;--navy-4:#162240;
+  --gold:#c8a84b;--gold-light:#e2c47a;--gold-dim:rgba(200,168,75,0.15);
+  --gold-border:rgba(200,168,75,0.25);--white:#f0eeea;
+  --white-dim:rgba(240,238,234,0.65);--radius:10px;--radius-lg:18px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--navy);color:var(--white);font-family:'Sora',sans-serif;line-height:1.7;overflow-x:hidden;}
+
+/* noise */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:64px;background:rgba(8,15,30,0.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--gold-border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--navy);}
+.nav-logo-text{font-size:1rem;font-weight:700;color:var(--white);letter-spacing:-0.02em;}
+.nav-logo-text span{color:var(--gold);}
+.nav-back{color:var(--white-dim);text-decoration:none;font-size:0.85rem;font-weight:500;display:flex;align-items:center;gap:6px;transition:color 0.2s;}
+.nav-back:hover{color:var(--gold);}
+
+/* layout */
+.page-wrap{max-width:820px;margin:0 auto;padding:110px 5% 80px;}
+
+/* header */
+.doc-header{margin-bottom:56px;padding-bottom:32px;border-bottom:1px solid var(--gold-border);}
+.doc-type{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.doc-type::before{content:'';width:24px;height:1px;background:var(--gold);}
+.doc-header h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-0.04em;color:var(--white);margin-bottom:12px;}
+.doc-meta{display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;}
+.doc-meta-item{display:flex;flex-direction:column;gap:3px;}
+.doc-meta-label{font-size:0.7rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);opacity:0.7;}
+.doc-meta-value{font-size:0.85rem;color:var(--white-dim);font-family:'DM Mono',monospace;}
+
+/* TOC */
+.toc{background:var(--navy-2);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:52px;}
+.toc-title{font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.toc-list a{color:var(--white-dim);text-decoration:none;font-size:0.875rem;display:flex;align-items:center;gap:10px;transition:color 0.2s;}
+.toc-list a:hover{color:var(--gold);}
+.toc-num{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);opacity:0.6;min-width:22px;}
+
+/* content */
+.doc-section{margin-bottom:52px;scroll-margin-top:80px;}
+.doc-section h2{font-size:1.2rem;font-weight:700;letter-spacing:-0.02em;color:var(--white);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.sec-num{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:5px;padding:2px 8px;}
+.doc-section p{font-size:0.9rem;color:var(--white-dim);margin-bottom:14px;}
+.doc-section ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin:14px 0;}
+.doc-section ul li{font-size:0.875rem;color:var(--white-dim);display:flex;align-items:flex-start;gap:10px;padding-left:4px;}
+.doc-section ul li::before{content:'—';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px;}
+.doc-section strong{color:var(--white);font-weight:600;}
+.doc-section a{color:var(--gold);text-decoration:none;}
+.doc-section a:hover{text-decoration:underline;}
+
+/* info box */
+.info-box{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--radius);padding:18px 22px;margin:20px 0;font-size:0.875rem;color:var(--white-dim);}
+.info-box strong{color:var(--gold-light);}
+
+.divider{height:1px;background:var(--gold-border);margin:52px 0;}
+
+/* footer */
+footer{border-top:1px solid var(--gold-border);padding:32px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.footer-brand{font-size:0.875rem;font-weight:700;color:var(--white);}
+.footer-brand span{color:var(--gold);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:0.8rem;color:var(--white-dim);text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--gold);}
+.footer-copy{font-size:0.75rem;color:rgba(240,238,234,0.35);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <div class="nav-logo-icon">A</div>
+    <div class="nav-logo-text">AirLab <span>Pro</span></div>
+  </a>
+  <a class="nav-back" href="/">← Kthehu në kryefaqe</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="doc-header">
+    <div class="doc-type">Dokument ligjor</div>
+    <h1>Politika e Privatësisë</h1>
+    <p style="color:var(--white-dim);font-size:0.95rem;max-width:600px;">
+      Kjo politikë shpjegon si AirBalance Albania mbledh, përdor dhe mbron të dhënat tuaja personale gjatë përdorimit të platformës AirLab Pro.
+    </p>
+    <div class="doc-meta">
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Versioni</span>
+        <span class="doc-meta-value">v1.0</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Hyrë në fuqi</span>
+        <span class="doc-meta-value">01 Maj 2026</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Kontrollori i të Dhënave</span>
+        <span class="doc-meta-value">AirBalance Albania</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Email kontakti</span>
+        <span class="doc-meta-value">info@airbalance.al</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">Tabela e përmbajtjes</div>
+    <ol class="toc-list">
+      <li><a href="#s1"><span class="toc-num">01</span> Kush jemi ne</a></li>
+      <li><a href="#s2"><span class="toc-num">02</span> Çfarë të dhënash mbledhim</a></li>
+      <li><a href="#s3"><span class="toc-num">03</span> Si i përdorim të dhënat</a></li>
+      <li><a href="#s4"><span class="toc-num">04</span> Baza ligjore e përpunimit (GDPR)</a></li>
+      <li><a href="#s5"><span class="toc-num">05</span> Ruajtja dhe siguria e të dhënave</a></li>
+      <li><a href="#s6"><span class="toc-num">06</span> Ndarja me palë të treta</a></li>
+      <li><a href="#s7"><span class="toc-num">07</span> Cookies dhe teknologji gjurmimi</a></li>
+      <li><a href="#s8"><span class="toc-num">08</span> Të drejtat tuaja</a></li>
+      <li><a href="#s9"><span class="toc-num">09</span> Mbajtja e të dhënave</a></li>
+      <li><a href="#s10"><span class="toc-num">10</span> Ndryshimet në politikë</a></li>
+      <li><a href="#s11"><span class="toc-num">11</span> Si të na kontaktoni</a></li>
+    </ol>
+  </div>
+
+  <div class="info-box">
+    <strong>Përmbledhje e thjeshtë:</strong> Ne mbledhim vetëm të dhënat e nevojshme për të ofruar shërbimin. Nuk i shesim kurrë të dhënat tuaja. Ju keni të drejtën të kërkoni fshirjen e tyre në çdo kohë.
+  </div>
+
+  <!-- S1 -->
+  <div class="doc-section" id="s1">
+    <h2><span class="sec-num">01</span> Kush jemi ne</h2>
+    <p><strong>AirBalance Albania</strong> është kompania shqiptare që zhvillon dhe operon platformën AirLab Pro — një platformë SaaS për vlerësimin profesional të Cilësisë së Ajrit të Brendshëm (IAQ).</p>
+    <p>Për qëllimet e kësaj politike dhe të Rregullores (BE) 2016/679 (GDPR), AirBalance Albania vepron si <strong>kontrollor i të dhënave</strong> tuaja personale.</p>
+    <ul>
+      <li><strong>Emri i kompanisë:</strong> AirBalance Albania</li>
+      <li><strong>Platforma:</strong> AirLab Pro (airlab.airbalance.al)</li>
+      <li><strong>Email:</strong> <a href="mailto:info@airbalance.al">info@airbalance.al</a></li>
+      <li><strong>Vendi i regjistrimit:</strong> Tiranë, Shqipëri</li>
+    </ul>
+  </div>
+
+  <!-- S2 -->
+  <div class="doc-section" id="s2">
+    <h2><span class="sec-num">02</span> Çfarë të dhënash mbledhim</h2>
+    <p>Mbledhim të dhëna vetëm kur keni nevojë t'i ofroni ato për të përdorur shërbimin:</p>
+
+    <p><strong>A. Të dhëna të llogarisë</strong></p>
+    <ul>
+      <li>Emri i plotë dhe adresa e email-it (gjatë regjistrimit)</li>
+      <li>Fjalëkalimi (i enkriptuar, nuk ruhet në tekst të qartë)</li>
+      <li>Emri i kompanisë / firmës (opsional, për branding PDF)</li>
+    </ul>
+
+    <p><strong>B. Të dhëna të matjeve IAQ</strong></p>
+    <ul>
+      <li>Vlerat e matjeve që ngarkoni (CO₂, PM2.5, TVOC, lagështi, temperaturë)</li>
+      <li>Metadatat e hapësirave (emri i dhomës, zona, data e matjes)</li>
+      <li>Raportet e gjeneruara dhe historiku i Score-ve</li>
+    </ul>
+
+    <p><strong>C. Të dhëna teknike (automatike)</strong></p>
+    <ul>
+      <li>Adresa IP dhe lloji i browser-it (për siguri dhe diagnostikim)</li>
+      <li>Koha e hyrjes dhe veprimet kryesore (logs funksionale)</li>
+      <li>Cookies sesioni (shih seksionin 7)</li>
+    </ul>
+
+    <p><strong>D. Të dhëna pagese</strong></p>
+    <ul>
+      <li>Pagesat procesohen nga <strong>Stripe</strong> — ne nuk ruajmë numrin e kartës. Stripe është kontrollor i pavarur i këtyre të dhënave.</li>
+    </ul>
+  </div>
+
+  <!-- S3 -->
+  <div class="doc-section" id="s3">
+    <h2><span class="sec-num">03</span> Si i përdorim të dhënat</h2>
+    <p>Të dhënat tuaja përdoren vetëm për qëllimet e mëposhtme:</p>
+    <ul>
+      <li>Ofrimi i platformës AirLab Pro dhe Score Engine-it</li>
+      <li>Gjenerimi i raporteve PDF dhe analizave AI</li>
+      <li>Autentikimi dhe siguria e llogarisë suaj</li>
+      <li>Dërgimi i raporteve me email nëpërmjet funksionit automatik</li>
+      <li>Komunikime lidhur me shërbimin (ndryshime, mirëmbajtje, fatura)</li>
+      <li>Përmirësimi i algoritmeve të Score Engine (të dhëna të anonimizuara)</li>
+    </ul>
+    <div class="info-box">
+      <strong>Nuk bëjmë kurrë:</strong> shitje të të dhënave tuaja tek palë të treta, marketing nga palë të treta pa lejen tuaj, ose profilizim automatik me efekte ligjore.
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="doc-section" id="s4">
+    <h2><span class="sec-num">04</span> Baza ligjore e përpunimit (GDPR)</h2>
+    <p>Nëse jeni rezident i BE/EEA, baza ligjore për përpunimin e të dhënave tuaja është:</p>
+    <ul>
+      <li><strong>Ekzekutimi i kontratës</strong> — për ofrimin e shërbimit pas regjistrimit (neni 6(1)(b) GDPR)</li>
+      <li><strong>Interesi legjitim</strong> — për siguri, anti-fraud dhe diagnostikim teknik (neni 6(1)(f) GDPR)</li>
+      <li><strong>Detyrim ligjor</strong> — për mbajtjen e regjistrimeve financiare (neni 6(1)(c) GDPR)</li>
+      <li><strong>Pëlqimi</strong> — për komunikimet marketing opsionale (neni 6(1)(a) GDPR)</li>
+    </ul>
+  </div>
+
+  <!-- S5 -->
+  <div class="doc-section" id="s5">
+    <h2><span class="sec-num">05</span> Ruajtja dhe siguria e të dhënave</h2>
+    <p>Të dhënat ruhen në serverë të sigurt nëpërmjet <strong>Supabase</strong> (infrastrukturë AWS, rajoni EU). Masat tona të sigurisë përfshijnë:</p>
+    <ul>
+      <li>Enkriptim TLS 1.3 për të gjitha transmetimet</li>
+      <li>Enkriptim AES-256 për bazën e të dhënave</li>
+      <li>Fjalëkalimet ruhen si hash bcrypt — askush nuk mund t'i lexojë</li>
+      <li>Autentikimi me dy faktorë (2FA) i disponueshëm</li>
+      <li>Auditim i hyrjeve dhe log-et e aksesit</li>
+    </ul>
+    <p>Nuk mund të garantojmë siguri absolute — asnjë sistem nuk mund. Në rast incidenti sigurie që afekton të dhënat tuaja, do t'ju njoftojmë brenda 72 orëve sipas GDPR.</p>
+  </div>
+
+  <!-- S6 -->
+  <div class="doc-section" id="s6">
+    <h2><span class="sec-num">06</span> Ndarja me palë të treta</h2>
+    <p>Nuk shesim, nuk japim me qira dhe nuk tregëtojmë të dhënat tuaja personale. Ndajmë të dhëna vetëm me <strong>nënprocesues</strong> të nevojshëm për funksionimin e platformës:</p>
+    <ul>
+      <li><strong>Supabase Inc.</strong> — ruajtja e të dhënave dhe autentikimi (AWS EU)</li>
+      <li><strong>Stripe Inc.</strong> — procesimi i pagesave (i çertifikuar PCI-DSS)</li>
+      <li><strong>Anthropic PBC</strong> — gjenerimi i analizave AI (të dhëna të anonimizuara)</li>
+      <li><strong>Resend / SendGrid</strong> — dërgimi i email-eve transaksionale</li>
+    </ul>
+    <p>Të gjithë nënprocesuesit janë të detyruar kontraktualisht të mbrojnë të dhënat tuaja dhe nuk lejohen t'i përdorin për qëllimet e tyre.</p>
+  </div>
+
+  <!-- S7 -->
+  <div class="doc-section" id="s7">
+    <h2><span class="sec-num">07</span> Cookies dhe teknologji gjurmimi</h2>
+    <p>Përdorim vetëm cookies të nevojshme për funksionimin e platformës:</p>
+    <ul>
+      <li><strong>Cookie sesioni</strong> — mban gjendjen e autentikimit tuaj (skadon pas daljes)</li>
+      <li><strong>Cookie preferencash</strong> — ruan gjuhën dhe cilësimet e ndërfaqes</li>
+    </ul>
+    <p>Nuk përdorim cookies analitike të palëve të treta (Google Analytics, Facebook Pixel etj.) pa pëlqimin tuaj të shprehur. Ju mund të refuzoni cookies jo-esenciale nga cilësimet e browser-it tuaj.</p>
+  </div>
+
+  <!-- S8 -->
+  <div class="doc-section" id="s8">
+    <h2><span class="sec-num">08</span> Të drejtat tuaja</h2>
+    <p>Sipas GDPR dhe legjislacionit shqiptar (Ligji nr. 9887/2008 i amenduar), keni të drejtat e mëposhtme:</p>
+    <ul>
+      <li><strong>E drejta e aksesit</strong> — të merrni kopje të të dhënave tuaja</li>
+      <li><strong>E drejta e korrigjimit</strong> — të ndreqni të dhëna të pasakta</li>
+      <li><strong>E drejta e fshirjes</strong> ("të harrohesh") — të kërkoni fshirjen e plotë</li>
+      <li><strong>E drejta e kufizimit</strong> — të kufizoni përpunimin e të dhënave</li>
+      <li><strong>E drejta e portabilitetit</strong> — të merrni të dhënat në format të lexueshëm</li>
+      <li><strong>E drejta e kundërshtimit</strong> — ndaj përpunimit bazuar në interes legjitim</li>
+      <li><strong>Tërheqja e pëlqimit</strong> — në çdo kohë, pa pasoja negative</li>
+    </ul>
+    <p>Për të ushtruar çdo të drejtë, dërgoni kërkesë tek <a href="mailto:info@airbalance.al">info@airbalance.al</a>. Përgjigjem brenda <strong>30 ditësh</strong>.</p>
+    <p>Keni gjithashtu të drejtën të ankoheni tek <strong>Komisioneri për të Drejtën e Informimit dhe Mbrojtjen e të Dhënave Personale</strong> (Shqipëri) — <a href="https://www.idp.al" target="_blank">www.idp.al</a>.</p>
+  </div>
+
+  <!-- S9 -->
+  <div class="doc-section" id="s9">
+    <h2><span class="sec-num">09</span> Mbajtja e të dhënave</h2>
+    <p>Mbajmë të dhënat tuaja vetëm aq gjatë sa është e nevojshme:</p>
+    <ul>
+      <li><strong>Të dhënat e llogarisë</strong> — deri sa ta mbyllni llogarinë + 30 ditë grace period</li>
+      <li><strong>Raportet IAQ</strong> — 3 vjet nga gjenerimi (ose deri në fshirje manuale)</li>
+      <li><strong>Logs teknikë</strong> — 90 ditë, pastaj fshihen automatikisht</li>
+      <li><strong>Të dhënat e faturimit</strong> — 5 vjet (detyrim ligjor fiskal)</li>
+    </ul>
+    <p>Pas mbylljes së llogarisë, të gjitha të dhënat IAQ fshihen brenda 30 ditëve. Të dhënat e faturimit mbahen sipas detyrimit ligjor.</p>
+  </div>
+
+  <!-- S10 -->
+  <div class="doc-section" id="s10">
+    <h2><span class="sec-num">10</span> Ndryshimet në politikë</h2>
+    <p>Mund ta përditësojmë këtë politikë herë pas here. Ndryshimet materiale do t'ju njoftojmë:</p>
+    <ul>
+      <li>Me email 30 ditë para hyrjes në fuqi</li>
+      <li>Me njoftim brenda platformës</li>
+      <li>Duke ndryshuar datën "Hyrë në fuqi" në krye të dokumentit</li>
+    </ul>
+    <p>Vazhdimi i përdorimit të platformës pas hyrjes në fuqi të ndryshimeve konsiderohet pranim i politikës së re.</p>
+  </div>
+
+  <!-- S11 -->
+  <div class="doc-section" id="s11">
+    <h2><span class="sec-num">11</span> Si të na kontaktoni</h2>
+    <p>Për çdo pyetje, kërkesë ose ankesë lidhur me privatësinë:</p>
+    <ul>
+      <li><strong>Email:</strong> <a href="mailto:info@airbalance.al">info@airbalance.al</a></li>
+      <li><strong>Subjekti:</strong> [Privatësia] — [kërkesa juaj]</li>
+      <li><strong>Koha e përgjigjes:</strong> brenda 30 ditëve kalendarike</li>
+    </ul>
+    <div class="info-box">
+      Nëse kërkoni fshirjen e të dhënave tuaja, dërgoni email me subjektin <strong>"Kërkesë fshirjeje të dhënash"</strong> nga adresa e email-it të regjistruar. Do të konfirmojmë brenda 5 ditëve pune.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p style="font-size:0.8rem;color:var(--white-dim);text-align:center;">
+    AirBalance Albania · Tiranë, Shqipëri · <a href="mailto:info@airbalance.al" style="color:var(--gold);">info@airbalance.al</a>
+    <br/>Versioni 1.0 · Hyrë në fuqi: 01 Maj 2026
+  </p>
+
+</div>
+
+<footer>
+  <div class="footer-brand">AirLab <span>Pro</span> <span style="color:var(--white-dim);font-weight:400;font-size:0.8rem;">· by AirBalance Albania</span></div>
+  <div class="footer-links">
+    <a href="/">Kryefaqja</a>
+    <a href="/privacy">Privatësia</a>
+    <a href="/terms">Kushtet</a>
+    <a href="mailto:info@airbalance.al">Kontakt</a>
+  </div>
+  <div class="footer-copy">© 2026 AirBalance Albania</div>
+</footer>
+
+</body>
+</html>

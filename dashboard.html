@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — AirLab Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="airlab-config.js"></script>
+<style>
+:root{
+  --navy:#080f1e;--navy-2:#0b1525;--navy-3:#101e38;--navy-4:#162240;
+  --gold:#c8a84b;--gold-l:#e2c47a;--gold-dim:rgba(200,168,75,0.12);
+  --gold-b:rgba(200,168,75,0.22);
+  --white:#f0eeea;--w60:rgba(240,238,234,0.6);--w30:rgba(240,238,234,0.3);--w10:rgba(240,238,234,0.08);
+  --green:#3ecf8e;--red:#e05252;--yellow:#e0c052;--blue:#4ea8e0;
+  --sidebar:220px;--topbar:60px;--r:10px;--r2:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--navy);color:var(--white);font-family:'Sora',sans-serif;display:flex;font-size:14px;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);height:100vh;background:var(--navy-2);border-right:1px solid var(--gold-b);display:flex;flex-direction:column;z-index:10;overflow:hidden;}
+.sb-logo{height:var(--topbar);display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--gold-b);flex-shrink:0;}
+.sb-logo-icon{width:30px;height:30px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy);flex-shrink:0;}
+.sb-logo-text{font-size:.9rem;font-weight:700;letter-spacing:-.02em;}
+.sb-logo-text span{color:var(--gold);}
+.sb-sec{padding:18px 12px 6px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--w30);}
+.sb-nav{flex:1;overflow-y:auto;padding:6px 0;}
+.sb-item{display:flex;align-items:center;gap:11px;padding:9px 16px;margin:2px 8px;border-radius:8px;cursor:pointer;transition:all .18s;color:var(--w60);font-size:.825rem;font-weight:500;border:1px solid transparent;user-select:none;}
+.sb-item:hover{background:var(--w10);color:var(--white);}
+.sb-item.active{background:var(--gold-dim);border-color:var(--gold-b);color:var(--gold);}
+.sb-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.sb-badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:.62rem;font-weight:800;padding:2px 6px;border-radius:100px;}
+.sb-bottom{border-top:1px solid var(--gold-b);padding:12px 8px;}
+.plan-box{background:var(--gold-dim);border:1px solid var(--gold-b);border-radius:9px;padding:12px 14px;margin-bottom:10px;}
+.plan-box-label{font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.plan-box-usage{font-size:.72rem;color:var(--w60);margin-bottom:7px;}
+.plan-bar{height:4px;background:var(--w10);border-radius:2px;overflow:hidden;}
+.plan-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .6s ease;}
+.plan-upgrade{font-size:.68rem;color:var(--gold);margin-top:8px;cursor:pointer;font-weight:600;}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background .18s;position:relative;}
+.sb-user:hover{background:var(--w10);}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold-dim);border:2px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--gold);flex-shrink:0;}
+.sb-uname{font-size:.8rem;font-weight:600;color:var(--white);}
+.sb-urole{font-size:.7rem;color:var(--w60);}
+.logout-btn{margin-left:auto;font-size:12px;color:var(--w30);cursor:pointer;transition:color .18s;background:none;border:none;}
+.logout-btn:hover{color:var(--red);}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:var(--topbar);display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--gold-b);background:var(--navy-2);flex-shrink:0;}
+.topbar-title{font-size:1rem;font-weight:700;letter-spacing:-.02em;}
+.topbar-title span{color:var(--w60);font-weight:400;font-size:.85rem;margin-left:8px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.tb-btn{background:var(--gold);color:var(--navy);border:none;padding:7px 16px;border-radius:8px;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .18s;}
+.tb-btn:hover{background:var(--gold-l);transform:translateY(-1px);}
+.tb-icon{width:34px;height:34px;background:var(--w10);border:1px solid var(--gold-b);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .18s;color:var(--w60);}
+.tb-icon:hover{background:var(--gold-dim);color:var(--gold);}
+
+.content{flex:1;overflow-y:auto;padding:28px;background:var(--navy);}
+.content::-webkit-scrollbar{width:4px;}
+.content::-webkit-scrollbar-thumb{background:var(--gold-b);border-radius:4px;}
+
+/* VIEWS */
+.view{display:none;animation:fIn .25s ease;}
+.view.active{display:block;}
+@keyframes fIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);padding:20px 22px;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4;}
+.stat-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--w60);margin-bottom:10px;}
+.stat-val{font-size:1.9rem;font-weight:800;letter-spacing:-.04em;color:var(--white);line-height:1;font-family:'DM Mono',monospace;}
+.stat-sub{font-size:.72rem;color:var(--w60);margin-top:6px;}
+
+/* CARD */
+.card{background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);overflow:hidden;}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--gold-b);}
+.card-title{font-size:.875rem;font-weight:700;}
+.card-link{font-size:.75rem;color:var(--gold);cursor:pointer;font-weight:600;}
+.card-body{padding:18px 22px;}
+
+/* DASH GRID */
+.dash-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;}
+.dash-l{display:flex;flex-direction:column;gap:20px;}
+.dash-r{display:flex;flex-direction:column;gap:20px;}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--w30);padding:10px 14px;text-align:left;border-bottom:1px solid var(--gold-b);}
+.tbl td{padding:13px 14px;border-bottom:1px solid rgba(240,238,234,.04);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--w10);cursor:pointer;}
+.rname{font-size:.825rem;font-weight:600;color:var(--white);margin-bottom:2px;}
+.rclient{font-size:.72rem;color:var(--w60);}
+.rdate{font-size:.75rem;color:var(--w60);font-family:'DM Mono',monospace;}
+.score-pill{display:inline-flex;align-items:center;justify-content:center;width:44px;height:24px;border-radius:6px;font-size:.75rem;font-weight:800;font-family:'DM Mono',monospace;}
+.sp-ex{background:rgba(62,207,142,.15);color:var(--green);border:1px solid rgba(62,207,142,.3);}
+.sp-good{background:rgba(78,168,224,.15);color:var(--blue);border:1px solid rgba(78,168,224,.3);}
+.sp-ok{background:rgba(224,192,82,.15);color:var(--yellow);border:1px solid rgba(224,192,82,.3);}
+.sp-bad{background:rgba(224,82,82,.15);color:var(--red);border:1px solid rgba(224,82,82,.3);}
+.chip{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:4px;}
+.chip-done{background:rgba(62,207,142,.12);color:var(--green);}
+.chip-draft{background:rgba(240,238,234,.08);color:var(--w60);}
+.chip-sent{background:rgba(78,168,224,.12);color:var(--blue);}
+.act-icon{width:28px;height:28px;border-radius:6px;background:var(--w10);border:1px solid var(--gold-b);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .18s;margin-left:3px;}
+.act-icon:hover{background:var(--gold-dim);color:var(--gold);}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.qa-btn{background:var(--navy-3);border:1px solid var(--gold-b);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;cursor:pointer;transition:all .18s;}
+.qa-btn:hover{background:var(--gold-dim);border-color:rgba(200,168,75,.45);transform:translateY(-1px);}
+.qa-icon{font-size:18px;}
+.qa-label{font-size:.78rem;font-weight:700;color:var(--white);}
+.qa-desc{font-size:.68rem;color:var(--w60);}
+
+/* CLIENT ITEM */
+.client-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(240,238,234,.04);}
+.client-item:last-child{border-bottom:none;}
+.cli-av{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:var(--gold-dim);border:1px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--gold);}
+.cli-name{font-size:.825rem;font-weight:600;color:var(--white);}
+.cli-type{font-size:.7rem;color:var(--w60);}
+.cli-score{margin-left:auto;text-align:right;}
+.cli-score-num{font-size:1rem;font-weight:800;font-family:'DM Mono',monospace;}
+.cli-score-lbl{font-size:.6rem;color:var(--w60);text-transform:uppercase;letter-spacing:.05em;}
+
+/* PARAM MINI */
+.pm-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(240,238,234,.04);}
+.pm-row:last-child{border-bottom:none;}
+.pm-name{font-size:.72rem;color:var(--w60);font-family:'DM Mono',monospace;width:68px;flex-shrink:0;}
+.pm-bar{flex:1;height:5px;background:var(--w10);border-radius:3px;overflow:hidden;}
+.pm-fill{height:100%;border-radius:3px;}
+.pm-val{font-size:.72rem;font-weight:700;color:var(--white);font-family:'DM Mono',monospace;width:68px;text-align:right;flex-shrink:0;}
+.pm-s{font-size:.65rem;font-weight:700;width:32px;text-align:right;flex-shrink:0;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 24px;color:var(--w60);}
+.empty-icon{font-size:2.5rem;margin-bottom:14px;}
+.empty-title{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.empty-desc{font-size:.8rem;line-height:1.65;margin-bottom:20px;}
+
+/* LOADING SKELETON */
+.skel{background:linear-gradient(90deg,var(--navy-3) 25%,var(--navy-4) 50%,var(--navy-3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(8,15,30,.85);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal{background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 26px;border-bottom:1px solid var(--gold-b);}
+.modal-title{font-size:1rem;font-weight:700;}
+.modal-x{width:30px;height:30px;background:var(--w10);border:1px solid var(--gold-b);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--w60);transition:all .18s;border-style:solid;}
+.modal-x:hover{background:var(--gold-dim);color:var(--gold);}
+.modal-body{padding:24px 26px;}
+.m-form-group{margin-bottom:16px;}
+.m-label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--w60);margin-bottom:7px;}
+.m-input,.m-select,.m-textarea{width:100%;background:var(--navy-3);border:1px solid var(--gold-b);border-radius:var(--r);padding:10px 14px;font-family:'Sora',sans-serif;font-size:.875rem;color:var(--white);outline:none;transition:border-color .18s;}
+.m-input:focus,.m-select:focus,.m-textarea:focus{border-color:var(--gold);}
+.m-input::placeholder,.m-textarea::placeholder{color:var(--w30);}
+.m-select option{background:var(--navy-3);}
+.m-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.m-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.modal-ftr{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 26px;border-top:1px solid var(--gold-b);}
+.btn-cancel{background:transparent;border:1px solid var(--gold-b);color:var(--w60);padding:9px 20px;border-radius:var(--r);font-family:'Sora',sans-serif;font-size:.825rem;font-weight:600;cursor:pointer;transition:all .18s;}
+.btn-cancel:hover{border-color:var(--gold);color:var(--gold);}
+.btn-submit{background:var(--gold);color:var(--navy);border:none;padding:9px 22px;border-radius:var(--r);font-family:'Sora',sans-serif;font-size:.825rem;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:7px;}
+.btn-submit:hover{background:var(--gold-l);}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+.m-loader{width:14px;height:14px;border:2px solid var(--navy);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* LIVE SCORE in modal */
+.live-score-box{background:var(--navy-3);border:1px solid var(--gold-b);border-radius:var(--r);padding:16px;text-align:center;margin-bottom:16px;}
+.ls-num{font-size:2.5rem;font-weight:800;font-family:'DM Mono',monospace;letter-spacing:-.04em;line-height:1;}
+.ls-grade{font-size:.9rem;font-weight:700;margin-top:4px;}
+.ls-note{font-size:.72rem;color:var(--w60);margin-top:8px;line-height:1.5;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;z-index:2000;background:var(--navy-3);border:1px solid var(--green);border-radius:var(--r);padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(80px);opacity:0;transition:all .3s ease;pointer-events:none;}
+.toast.show{transform:none;opacity:1;}
+.toast-err{border-color:var(--red);}
+
+/* CLIENTS GRID */
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.cli-card{background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);padding:22px;transition:border-color .2s,transform .2s;cursor:pointer;}
+.cli-card:hover{border-color:rgba(200,168,75,.5);transform:translateY(-2px);}
+.cc-hdr{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.cc-av{width:46px;height:46px;border-radius:12px;background:var(--gold-dim);border:2px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--gold);flex-shrink:0;}
+.cc-name{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:3px;}
+.cc-type{font-size:.72rem;color:var(--w60);}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;}
+.cc-sl{font-size:.62rem;color:var(--w60);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.cc-sv{font-size:1rem;font-weight:800;font-family:'DM Mono',monospace;}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.f-btn{background:var(--navy-2);border:1px solid var(--gold-b);color:var(--w60);padding:6px 14px;border-radius:7px;font-family:'Sora',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .18s;}
+.f-btn:hover,.f-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.search-bar{display:flex;align-items:center;gap:10px;background:var(--navy-2);border:1px solid var(--gold-b);border-radius:9px;padding:8px 16px;margin-bottom:16px;}
+.search-bar input{background:none;border:none;outline:none;color:var(--white);font-family:'Sora',sans-serif;font-size:.85rem;flex:1;}
+.search-bar input::placeholder{color:var(--w30);}
+
+/* SCORE ENGINE VIEW */
+.se-grid{display:grid;grid-template-columns:1fr 300px;gap:20px;max-width:860px;}
+
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr;}.se-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">A</div>
+    <div class="sb-logo-text">AirLab <span>Pro</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Kryesore</div>
+    <div class="sb-item active" data-view="dashboard"><span class="sb-icon">◈</span>Dashboard</div>
+    <div class="sb-item" data-view="reports"><span class="sb-icon">📋</span>Raporte<span class="sb-badge" id="reports-badge">0</span></div>
+    <div class="sb-item" data-view="clients"><span class="sb-icon">👥</span>Klientët</div>
+    <div class="sb-sec">Mjete</div>
+    <div class="sb-item" data-view="score"><span class="sb-icon">⚙️</span>Score Engine</div>
+    <div class="sb-sec">Llogaria</div>
+    <div class="sb-item" data-view="settings"><span class="sb-icon">⚙</span>Cilësimet</div>
+  </nav>
+  <div class="sb-bottom">
+    <div class="plan-box">
+      <div class="plan-box-label" id="sb-plan">Plan Falas</div>
+      <div class="plan-box-usage" id="sb-usage">— / 5 raporte</div>
+      <div class="plan-bar"><div class="plan-bar-fill" id="sb-bar" style="width:0%"></div></div>
+      <div class="plan-upgrade">↑ Kaloje në Pro</div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-avatar">—</div>
+      <div>
+        <div class="sb-uname" id="sb-name">Duke ngarkuar...</div>
+        <div class="sb-urole" id="sb-company">AirBalance Albania</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="Dil">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard <span>/ Kryefaqja</span></div>
+    <div class="topbar-right">
+      <div class="tb-icon">🔍</div>
+      <button class="tb-btn" onclick="openModal()">+ Raport i Ri</button>
+    </div>
+  </div>
+  <div class="content" id="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div style="margin-bottom:20px;">
+        <div style="font-size:1.15rem;font-weight:800;letter-spacing:-.03em;" id="welcome-msg">Mirëmëngjes 👋</div>
+        <div style="font-size:.8rem;color:var(--w60);margin-top:3px;" id="welcome-sub">Duke ngarkuar...</div>
+      </div>
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card"><div class="stat-label">Raporte Total</div><div class="stat-val skel" style="width:60px;height:36px;">&nbsp;</div></div>
+        <div class="stat-card"><div class="stat-label">Klientë</div><div class="stat-val skel" style="width:60px;height:36px;">&nbsp;</div></div>
+        <div class="stat-card"><div class="stat-label">Score Mesatar</div><div class="stat-val skel" style="width:60px;height:36px;">&nbsp;</div></div>
+        <div class="stat-card"><div class="stat-label">PDF Dërguar</div><div class="stat-val skel" style="width:60px;height:36px;">&nbsp;</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-l">
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">Raportet e Fundit</div><div class="card-link" onclick="switchView('reports')">Të gjitha →</div></div>
+            <div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Hapësira / Klienti</th><th>Score</th><th>Data</th><th>Statusi</th><th></th></tr></thead><tbody id="recent-tbody"></tbody></table></div>
+          </div>
+        </div>
+        <div class="dash-r">
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">Veprime të Shpejta</div></div>
+            <div class="card-body">
+              <div class="qa-grid">
+                <div class="qa-btn" onclick="openModal()"><div class="qa-icon">📝</div><div class="qa-label">Raport i Ri</div><div class="qa-desc">Shto matje manuale</div></div>
+                <div class="qa-btn" onclick="switchView('score')"><div class="qa-icon">⚡</div><div class="qa-label">Llogarit Score</div><div class="qa-desc">Pa e ruajtur</div></div>
+                <div class="qa-btn" onclick="switchView('clients')"><div class="qa-icon">👤</div><div class="qa-label">Klient i Ri</div><div class="qa-desc">Shto në portofol</div></div>
+                <div class="qa-btn"><div class="qa-icon">📧</div><div class="qa-label">Dërgo PDF</div><div class="qa-desc">Email klientit</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">Klientët Aktivë</div><div class="card-link" onclick="switchView('clients')">Të gjithë →</div></div>
+            <div class="card-body" id="top-clients-body"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="view" id="view-reports">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.1rem;font-weight:700;">Të gjitha Raportet</h2>
+        <button class="tb-btn" onclick="openModal()">+ Raport i Ri</button>
+      </div>
+      <div class="filter-row" id="report-filters">
+        <button class="f-btn active" onclick="filterReports('all',this)">Të gjitha</button>
+        <button class="f-btn" onclick="filterReports('sent',this)">Dërguar</button>
+        <button class="f-btn" onclick="filterReports('done',this)">Kompletuar</button>
+        <button class="f-btn" onclick="filterReports('draft',this)">Draft</button>
+      </div>
+      <div class="search-bar"><span>🔍</span><input type="text" id="search-input" placeholder="Kërko sipas emrit ose klientit..." oninput="renderAllReports()"/></div>
+      <div class="card"><table class="tbl"><thead><tr><th>Hapësira / Klienti</th><th>Score</th><th>CO₂</th><th>PM2.5</th><th>Data</th><th>Statusi</th><th></th></tr></thead><tbody id="all-reports-tbody"></tbody></table></div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="view" id="view-clients">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.1rem;font-weight:700;">Portofoli i Klientëve</h2>
+        <button class="tb-btn" onclick="openClientModal()">+ Klient i Ri</button>
+      </div>
+      <div class="clients-grid" id="clients-grid"></div>
+    </div>
+
+    <!-- SCORE ENGINE -->
+    <div class="view" id="view-score">
+      <div style="margin-bottom:20px;"><h2 style="font-size:1.1rem;font-weight:700;">Score Engine — Llogaritje Live</h2></div>
+      <div class="se-grid">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Parametrat IAQ</div></div>
+          <div class="card-body">
+            <div class="m-row" style="margin-bottom:14px;">
+              <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">CO₂ (ppm)</label><input class="m-input" type="number" id="se-co2" value="842" oninput="liveScore()"/></div>
+              <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">PM2.5 (µg/m³)</label><input class="m-input" type="number" id="se-pm" value="18" oninput="liveScore()"/></div>
+            </div>
+            <div class="m-row" style="margin-bottom:14px;">
+              <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">TVOC (mg/m³)</label><input class="m-input" type="number" id="se-tvoc" value="0.24" step="0.01" oninput="liveScore()"/></div>
+              <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">Lagështia (%RH)</label><input class="m-input" type="number" id="se-rh" value="52" oninput="liveScore()"/></div>
+            </div>
+            <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">Temperatura (°C)</label><input class="m-input" type="number" id="se-temp" value="22.4" step="0.1" oninput="liveScore()"/></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Rezultati Live</div></div>
+          <div class="card-body" style="text-align:center;">
+            <div id="se-num" style="font-size:4rem;font-weight:800;font-family:'DM Mono',monospace;letter-spacing:-.04em;color:var(--gold);">78</div>
+            <div id="se-grade" style="font-size:1.1rem;font-weight:700;color:var(--green);margin-bottom:12px;">MIRË</div>
+            <div id="se-note" style="font-size:.78rem;color:var(--w60);line-height:1.65;">Ajri është brenda parametrave të pranueshëm.</div>
+            <button class="tb-btn" style="margin:20px auto 0;justify-content:center;" onclick="openModal()">Gjenero Raport ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div style="margin-bottom:20px;"><h2 style="font-size:1.1rem;font-weight:700;">Cilësimet e Llogarisë</h2></div>
+      <div style="max-width:580px;display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Profili & Kompania</div></div>
+          <div class="card-body">
+            <div class="m-row" style="margin-bottom:14px;">
+              <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">Emri i Plotë</label><input class="m-input" type="text" id="s-name"/></div>
+              <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">Kompania</label><input class="m-input" type="text" id="s-co"/></div>
+            </div>
+            <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">Nënshkrimi PDF</label><input class="m-input" type="text" id="s-sig" placeholder="Inxh. Emri · Kompania · Tel..."/></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button class="tb-btn" onclick="saveProfile()">Ruaj Ndryshimet</button>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Siguria</div></div>
+          <div class="card-body">
+            <button class="btn-cancel" onclick="sendPwReset()">📧 Dërgo link ndryshimi fjalëkalimi</button>
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(224,82,82,.3);">
+          <div class="card-hdr"><div class="card-title" style="color:var(--red);">Zona e Rrezikshme</div></div>
+          <div class="card-body"><button class="btn-cancel" style="color:var(--red);border-color:rgba(224,82,82,.3);" onclick="doLogout()">⏻ Dil nga llogaria</button></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODAL: New Report -->
+<div class="modal-ov" id="modal-report">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">📝 Raport i Ri IAQ</div>
+      <div class="modal-x" onclick="closeModal('modal-report')">✕</div>
+    </div>
+    <div class="modal-body">
+      <!-- Live score preview -->
+      <div class="live-score-box">
+        <div id="m-score-num" style="font-size:2.5rem;font-weight:800;font-family:'DM Mono',monospace;color:var(--gold);">—</div>
+        <div id="m-score-grade" style="font-size:.875rem;font-weight:700;color:var(--w60);margin-top:4px;">Plotëso parametrat</div>
+        <div id="m-score-note" style="font-size:.72rem;color:var(--w60);margin-top:6px;line-height:1.5;"></div>
+      </div>
+      <div class="m-row">
+        <div class="m-form-group"><label class="m-label">Klienti</label>
+          <select class="m-select" id="m-client"><option value="">-- Zgjidh klientin --</option></select>
+        </div>
+        <div class="m-form-group"><label class="m-label">Lloji i Hapësirës</label>
+          <select class="m-select" id="m-space-type">
+            <option>Zyrë</option><option>Rezidencë</option><option>Shkollë / Çerdhe</option>
+            <option>Spital / Klinikë</option><option>Hotel</option><option>Dyqan / Retail</option>
+          </select>
+        </div>
+      </div>
+      <div class="m-form-group"><label class="m-label">Emri i Hapësirës</label><input class="m-input" id="m-space" placeholder="p.sh. Zyrë 3A, Salla e Mbledhjeve"/></div>
+      <div class="m-form-group"><label class="m-label">Adresa</label><input class="m-input" id="m-address" placeholder="Rruga, Tiranë"/></div>
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--w60);margin:4px 0 12px;">Parametrat e Matjes</div>
+      <div class="m-row-3">
+        <div class="m-form-group" style="margin-bottom:10px;"><label class="m-label">CO₂ (ppm)</label><input class="m-input" type="number" id="m-co2" placeholder="800" oninput="modalScore()"/></div>
+        <div class="m-form-group" style="margin-bottom:10px;"><label class="m-label">PM2.5 (µg/m³)</label><input class="m-input" type="number" id="m-pm" placeholder="15" oninput="modalScore()"/></div>
+        <div class="m-form-group" style="margin-bottom:10px;"><label class="m-label">TVOC (mg/m³)</label><input class="m-input" type="number" id="m-tvoc" placeholder="0.2" step="0.01" oninput="modalScore()"/></div>
+        <div class="m-form-group" style="margin-bottom:10px;"><label class="m-label">Lagështia (%RH)</label><input class="m-input" type="number" id="m-rh" placeholder="50" oninput="modalScore()"/></div>
+        <div class="m-form-group" style="margin-bottom:10px;"><label class="m-label">Temperatura (°C)</label><input class="m-input" type="number" id="m-temp" placeholder="22" step="0.1" oninput="modalScore()"/></div>
+        <div class="m-form-group" style="margin-bottom:10px;"><label class="m-label">Data Matjes</label><input class="m-input" type="date" id="m-date"/></div>
+      </div>
+      <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">Shënime</label><input class="m-input" id="m-notes" placeholder="Kushte specifike..."/></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-report')">Anulo</button>
+      <button class="btn-submit" id="report-submit-btn" onclick="submitReport()">
+        <span id="r-lbl">⚡ Gjenero & Ruaj</span>
+        <div class="m-loader" id="r-load"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: New Client -->
+<div class="modal-ov" id="modal-client">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">👤 Klient i Ri</div>
+      <div class="modal-x" onclick="closeModal('modal-client')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="m-row">
+        <div class="m-form-group"><label class="m-label">Emri i Klientit / Kompanisë</label><input class="m-input" id="c-name" placeholder="Hapi Group SH.P.K."/></div>
+        <div class="m-form-group"><label class="m-label">Lloji</label>
+          <select class="m-select" id="c-type">
+            <option>Zyrë</option><option>Rezidencë</option><option>Shkollë / Çerdhe</option>
+            <option>Spital / Klinikë</option><option>Hotel</option><option>Dyqan / Retail</option><option>Tjetër</option>
+          </select>
+        </div>
+      </div>
+      <div class="m-row">
+        <div class="m-form-group"><label class="m-label">Email</label><input class="m-input" type="email" id="c-email" placeholder="klienti@email.al"/></div>
+        <div class="m-form-group"><label class="m-label">Telefoni</label><input class="m-input" id="c-phone" placeholder="+355..."/></div>
+      </div>
+      <div class="m-form-group"><label class="m-label">Adresa</label><input class="m-input" id="c-address" placeholder="Rruga, Tiranë"/></div>
+      <div class="m-form-group" style="margin-bottom:0;"><label class="m-label">Shënime</label><input class="m-input" id="c-notes" placeholder="Informacione shtesë..."/></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-client')">Anulo</button>
+      <button class="btn-submit" id="client-submit-btn" onclick="submitClient()">
+        <span id="c-lbl">Shto Klientin</span>
+        <div class="m-loader" id="c-load"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-icon">✅</span><span id="toast-text">Sukses!</span></div>
+
+<script>
+// ── Init Supabase ──────────────────────────────────────────
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+let currentUser   = null;
+let userProfile   = null;
+let allReports    = [];
+let allClients    = [];
+let filterStatus  = 'all';
+
+// ── AUTH GUARD ─────────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = '/login?mode=signin'; return; }
+
+  currentUser = session.user;
+  await loadProfile();
+  await Promise.all([loadReports(), loadClients()]);
+  renderDashboard();
+  liveScore();
+
+  // Listen for auth changes
+  sb.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') window.location.href = '/login';
+  });
+}
+init();
+
+// ── PROFILE ────────────────────────────────────────────────
+async function loadProfile() {
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  userProfile = data;
+  if (!userProfile) return;
+
+  const name = userProfile.full_name || currentUser.email.split('@')[0];
+  const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
+  document.getElementById('sb-avatar').textContent  = initials;
+  document.getElementById('sb-name').textContent    = name;
+  document.getElementById('sb-company').textContent = userProfile.company || 'AirBalance Albania';
+  document.getElementById('sb-plan').textContent    = userProfile.plan === 'pro' ? 'Plan Pro' : userProfile.plan === 'enterprise' ? 'Enterprise' : 'Plan Falas';
+
+  const limit = userProfile.plan === 'free' ? 5 : userProfile.plan === 'pro' ? 999 : 9999;
+  const used  = userProfile.reports_used || 0;
+  document.getElementById('sb-usage').textContent = `${used} / ${userProfile.plan === 'free' ? '5' : '∞'} raporte`;
+  document.getElementById('sb-bar').style.width   = userProfile.plan === 'free' ? `${Math.min(used/5*100,100)}%` : '100%';
+
+  // Settings prefill
+  document.getElementById('s-name').value = userProfile.full_name  || '';
+  document.getElementById('s-co').value   = userProfile.company    || '';
+  document.getElementById('s-sig').value  = userProfile.pdf_signature || '';
+
+  // Welcome
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Mirëmëngjes' : hour < 18 ? 'Mirëdita' : 'Mirëmbrëma';
+  document.getElementById('welcome-msg').textContent =
+    `${greet}, ${name.split(' ')[0]} 👋`;
+}
+
+// ── REPORTS ────────────────────────────────────────────────
+async function loadReports() {
+  const { data, error } = await sb
+    .from('reports_with_client')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error(error); return; }
+  allReports = data || [];
+
+  document.getElementById('reports-badge').textContent = allReports.length;
+  document.getElementById('welcome-sub').textContent =
+    `${new Date().toLocaleDateString('sq-AL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · ${allReports.length} raporte gjithsej`;
+}
+
+// ── CLIENTS ────────────────────────────────────────────────
+async function loadClients() {
+  const { data, error } = await sb
+    .from('client_stats')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('reports_count', { ascending: false });
+
+  if (error) { console.error(error); return; }
+  allClients = data || [];
+
+  // Populate client dropdown in modal
+  const sel = document.getElementById('m-client');
+  sel.innerHTML = '<option value="">-- Zgjidh klientin --</option>';
+  allClients.forEach(c => {
+    sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+  });
+}
+
+// ── RENDER DASHBOARD ───────────────────────────────────────
+function renderDashboard() {
+  // Stats
+  const totalReports = allReports.length;
+  const totalClients = allClients.length;
+  const avgScore = allReports.length
+    ? Math.round(allReports.filter(r=>r.iaq_score).reduce((a,r)=>a+r.iaq_score,0) / allReports.filter(r=>r.iaq_score).length)
+    : '—';
+  const sentCount = allReports.filter(r=>r.status==='sent').length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Raporte Total</div><div class="stat-val">${totalReports}</div><div class="stat-sub">Gjithsej raporte</div></div>
+    <div class="stat-card"><div class="stat-label">Klientë</div><div class="stat-val">${totalClients}</div><div class="stat-sub">Klientë aktivë</div></div>
+    <div class="stat-card"><div class="stat-label">Score Mesatar</div><div class="stat-val" style="color:var(--gold)">${avgScore}</div><div class="stat-sub">IAQ Score / 100</div></div>
+    <div class="stat-card"><div class="stat-label">PDF Dërguar</div><div class="stat-val">${sentCount}</div><div class="stat-sub">Raporte të dërguara</div></div>
+  `;
+
+  // Recent reports (5 last)
+  const tbody = document.getElementById('recent-tbody');
+  if (!allReports.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Asnjë raport ende</div><div class="empty-desc">Krijoni raportin tuaj të parë IAQ.</div><button class="tb-btn" style="margin:0 auto;" onclick="openModal()">+ Raport i Ri</button></div></td></tr>`;
+  } else {
+    tbody.innerHTML = allReports.slice(0,5).map(r => reportRow(r, false)).join('');
+  }
+
+  // Top clients (4)
+  const el = document.getElementById('top-clients-body');
+  if (!allClients.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Asnjë klient</div><div class="empty-desc">Shto klientin e parë.</div></div>`;
+  } else {
+    el.innerHTML = allClients.slice(0,4).map(c => {
+      const sc = c.avg_score || '—';
+      const col = typeof sc === 'number' ? scoreColor(sc) : 'var(--w60)';
+      return `<div class="client-item">
+        <div class="cli-av">${c.name.slice(0,2).toUpperCase()}</div>
+        <div><div class="cli-name">${c.name}</div><div class="cli-type">${c.reports_count||0} raporte</div></div>
+        <div class="cli-score"><div class="cli-score-num" style="color:${col}">${sc}</div><div class="cli-score-lbl">Score</div></div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ── RENDER REPORTS TABLE ───────────────────────────────────
+function reportRow(r, extended) {
+  const sc = r.iaq_score;
+  const pill = !sc ? '<span style="color:var(--w30);font-size:.75rem;">—</span>' :
+    `<span class="score-pill ${sc>=85?'sp-ex':sc>=70?'sp-good':sc>=55?'sp-ok':'sp-bad'}">${sc}</span>`;
+  const chip = `<span class="chip chip-${r.status||'draft'}">${r.status==='sent'?'Dërguar':r.status==='done'?'Kompletuar':'Draft'}</span>`;
+  const date = formatDate(r.created_at);
+  const ext = extended ? `<td class="rdate">${r.co2||'—'} ppm</td><td class="rdate">${r.pm25||'—'} µg/m³</td>` : '';
+  return `<tr onclick="void(0)">
+    <td><div class="rname">${r.space_name}</div><div class="rclient">${r.client_name||'—'}</div></td>
+    <td>${pill}</td>
+    ${ext}
+    <td class="rdate">${date}</td>
+    <td>${chip}</td>
+    <td>
+      <span class="act-icon" title="Shkarko PDF" onclick="event.stopPropagation()">⬇</span>
+      <span class="act-icon" title="Fshi" onclick="event.stopPropagation();deleteReport('${r.id}')">🗑</span>
+    </td>
+  </tr>`;
+}
+
+function renderAllReports() {
+  const q = (document.getElementById('search-input')?.value||'').toLowerCase();
+  let filtered = allReports.filter(r => {
+    const match = !q || r.space_name?.toLowerCase().includes(q) || r.client_name?.toLowerCase().includes(q);
+    const status = filterStatus === 'all' || r.status === filterStatus;
+    return match && status;
+  });
+  const tbody = document.getElementById('all-reports-tbody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Asnjë raport i gjetur</div></div></td></tr>`;
+  } else {
+    tbody.innerHTML = filtered.map(r => reportRow(r, true)).join('');
+  }
+}
+
+function filterReports(status, btn) {
+  filterStatus = status;
+  document.querySelectorAll('#report-filters .f-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAllReports();
+}
+
+// ── RENDER CLIENTS ─────────────────────────────────────────
+function renderClients() {
+  const el = document.getElementById('clients-grid');
+  if (!allClients.length) {
+    el.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">👥</div><div class="empty-title">Asnjë klient ende</div><div class="empty-desc">Shtoni klientin e parë për të filluar.</div><button class="tb-btn" style="margin:0 auto;" onclick="openClientModal()">+ Klient i Ri</button></div>`;
+    return;
+  }
+  el.innerHTML = allClients.map(c => {
+    const sc = c.avg_score||'—';
+    const col = typeof sc==='number' ? scoreColor(sc) : 'var(--w60)';
+    return `<div class="cli-card">
+      <div class="cc-hdr">
+        <div class="cc-av">${c.name.slice(0,2).toUpperCase()}</div>
+        <div><div class="cc-name">${c.name}</div><div class="cc-type">${c.type}</div></div>
+      </div>
+      <div class="cc-stats">
+        <div><div class="cc-sl">Raporte</div><div class="cc-sv">${c.reports_count||0}</div></div>
+        <div><div class="cc-sl">Avg Score</div><div class="cc-sv" style="color:${col}">${sc}</div></div>
+        <div><div class="cc-sl">Qyteti</div><div class="cc-sv" style="font-size:.8rem;margin-top:4px;">${c.city||'Tiranë'}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────
+const viewTitles = {
+  dashboard:'Dashboard / Kryefaqja',
+  reports:'Raporte / Të gjitha',
+  clients:'Klientët / Portofoli',
+  score:'Mjete / Score Engine',
+  settings:'Llogaria / Cilësimet',
+};
+function switchView(v) {
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`[data-view="${v}"]`)?.classList.add('active');
+  const t = viewTitles[v]||v;
+  const [a,b] = t.split(' / ');
+  document.getElementById('topbar-title').innerHTML = `${a} <span>/ ${b}</span>`;
+
+  if (v==='reports') renderAllReports();
+  if (v==='clients') renderClients();
+}
+document.querySelectorAll('.sb-item[data-view]').forEach(item=>{
+  item.addEventListener('click',()=>switchView(item.dataset.view));
+});
+
+// ── MODALS ─────────────────────────────────────────────────
+function openModal() {
+  document.getElementById('m-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('modal-report').classList.add('open');
+}
+function openClientModal() {
+  document.getElementById('modal-client').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.querySelectorAll('.modal-ov').forEach(ov=>{
+  ov.addEventListener('click',e=>{if(e.target===ov)closeModal(ov.id);});
+});
+
+// ── SUBMIT REPORT ──────────────────────────────────────────
+function modalScore() {
+  const co2  = parseFloat(document.getElementById('m-co2').value)||0;
+  const pm25 = parseFloat(document.getElementById('m-pm').value)||0;
+  const tvoc = parseFloat(document.getElementById('m-tvoc').value)||0;
+  const rh   = parseFloat(document.getElementById('m-rh').value)||0;
+  const temp = parseFloat(document.getElementById('m-temp').value)||0;
+  if (!co2 && !pm25) { document.getElementById('m-score-num').textContent='—'; return; }
+  const { score, grade } = calcIAQScore({ co2, pm25, tvoc, humidity:rh, temperature:temp });
+  const col = scoreColor(score);
+  document.getElementById('m-score-num').style.color = col;
+  document.getElementById('m-score-num').textContent = score;
+  document.getElementById('m-score-grade').textContent = grade;
+  document.getElementById('m-score-grade').style.color = col;
+  document.getElementById('m-score-note').textContent =
+    generateAnalysis({ co2, pm25, tvoc, humidity:rh, temperature:temp, grade }).slice(0,120)+'...';
+}
+
+async function submitReport() {
+  const space = document.getElementById('m-space').value.trim();
+  const co2   = parseFloat(document.getElementById('m-co2').value)||null;
+  if (!space) { showToast('Vendosni emrin e hapësirës','err'); return; }
+
+  const pm25 = parseFloat(document.getElementById('m-pm').value)||null;
+  const tvoc = parseFloat(document.getElementById('m-tvoc').value)||null;
+  const rh   = parseFloat(document.getElementById('m-rh').value)||null;
+  const temp = parseFloat(document.getElementById('m-temp').value)||null;
+
+  let iaq_score=null, grade=null, ai_analysis=null;
+  if (co2||pm25) {
+    const r = calcIAQScore({co2:co2||0,pm25:pm25||0,tvoc:tvoc||0,humidity:rh||50,temperature:temp||22});
+    iaq_score = r.score; grade = r.grade;
+    ai_analysis = generateAnalysis({co2:co2||0,pm25:pm25||0,tvoc:tvoc||0,humidity:rh||50,temperature:temp||22,grade});
+  }
+
+  const btn = document.getElementById('report-submit-btn');
+  btn.disabled = true;
+  document.getElementById('r-load').style.display = 'block';
+  document.getElementById('r-lbl').style.display  = 'none';
+
+  const { error } = await sb.from('reports').insert({
+    user_id:    currentUser.id,
+    client_id:  document.getElementById('m-client').value || null,
+    space_name: space,
+    space_type: document.getElementById('m-space-type').value,
+    address:    document.getElementById('m-address').value.trim()||null,
+    co2, pm25, tvoc, humidity:rh, temperature:temp,
+    iaq_score, grade, ai_analysis,
+    notes:      document.getElementById('m-notes').value.trim()||null,
+    measured_at: document.getElementById('m-date').value||null,
+    status:     'done',
+  });
+
+  btn.disabled = false;
+  document.getElementById('r-load').style.display = 'none';
+  document.getElementById('r-lbl').style.display  = 'inline';
+
+  if (error) { showToast('Gabim: '+error.message,'err'); return; }
+
+  // Increment counter
+  await sb.rpc('increment_reports_used', { user_uuid: currentUser.id });
+
+  closeModal('modal-report');
+  showToast(`Raporti u ruajt! Score: ${iaq_score||'—'}`);
+  await loadReports();
+  renderDashboard();
+  renderAllReports();
+}
+
+// ── SUBMIT CLIENT ──────────────────────────────────────────
+async function submitClient() {
+  const name = document.getElementById('c-name').value.trim();
+  if (!name) { showToast('Vendosni emrin e klientit','err'); return; }
+
+  const btn = document.getElementById('client-submit-btn');
+  btn.disabled = true;
+  document.getElementById('c-load').style.display = 'block';
+  document.getElementById('c-lbl').style.display  = 'none';
+
+  const { error } = await sb.from('clients').insert({
+    user_id: currentUser.id,
+    name,
+    type:    document.getElementById('c-type').value,
+    email:   document.getElementById('c-email').value.trim()||null,
+    phone:   document.getElementById('c-phone').value.trim()||null,
+    address: document.getElementById('c-address').value.trim()||null,
+    notes:   document.getElementById('c-notes').value.trim()||null,
+  });
+
+  btn.disabled = false;
+  document.getElementById('c-load').style.display = 'none';
+  document.getElementById('c-lbl').style.display  = 'inline';
+
+  if (error) { showToast('Gabim: '+error.message,'err'); return; }
+  closeModal('modal-client');
+  showToast('Klienti u shtua me sukses!');
+  await loadClients();
+  renderClients();
+  renderDashboard();
+}
+
+// ── DELETE REPORT ──────────────────────────────────────────
+async function deleteReport(id) {
+  if (!confirm('Fshi këtë raport?')) return;
+  const { error } = await sb.from('reports').delete().eq('id',id).eq('user_id',currentUser.id);
+  if (error) { showToast('Gabim: '+error.message,'err'); return; }
+  showToast('Raporti u fshi.');
+  await loadReports();
+  renderDashboard();
+  renderAllReports();
+}
+
+// ── PROFILE SAVE ───────────────────────────────────────────
+async function saveProfile() {
+  const { error } = await sb.from('profiles').update({
+    full_name:     document.getElementById('s-name').value.trim(),
+    company:       document.getElementById('s-co').value.trim(),
+    pdf_signature: document.getElementById('s-sig').value.trim(),
+  }).eq('id', currentUser.id);
+  if (error) { showToast('Gabim: '+error.message,'err'); return; }
+  showToast('Profili u ruajt!');
+  await loadProfile();
+}
+
+async function sendPwReset() {
+  const { error } = await sb.auth.resetPasswordForEmail(currentUser.email,{
+    redirectTo: window.location.origin + '/reset-password'
+  });
+  if (error) { showToast(error.message,'err'); return; }
+  showToast('Email rivendosjeje u dërgua!');
+}
+
+// ── LOGOUT ─────────────────────────────────────────────────
+async function doLogout() {
+  await sb.auth.signOut();
+  window.location.href = '/login?mode=signin';
+}
+
+// ── SCORE ENGINE (standalone) ──────────────────────────────
+function liveScore() {
+  const co2  = parseFloat(document.getElementById('se-co2')?.value)||0;
+  const pm25 = parseFloat(document.getElementById('se-pm')?.value)||0;
+  const tvoc = parseFloat(document.getElementById('se-tvoc')?.value)||0;
+  const rh   = parseFloat(document.getElementById('se-rh')?.value)||50;
+  const temp = parseFloat(document.getElementById('se-temp')?.value)||22;
+  const { score, grade } = calcIAQScore({co2,pm25,tvoc,humidity:rh,temperature:temp});
+  const col  = scoreColor(score);
+  document.getElementById('se-num').textContent   = score;
+  document.getElementById('se-num').style.color   = col;
+  document.getElementById('se-grade').textContent = grade;
+  document.getElementById('se-grade').style.color = col;
+  document.getElementById('se-note').textContent  =
+    generateAnalysis({co2,pm25,tvoc,humidity:rh,temperature:temp,grade}).slice(0,140);
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = type==='err' ? '❌' : '✅';
+  document.getElementById('toast-text').textContent = msg;
+  t.className = 'toast' + (type==='err'?' toast-err':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

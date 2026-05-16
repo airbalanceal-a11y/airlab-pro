@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hyr / Regjistrohu — AirLab Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<!-- Supabase JS SDK (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Shared config -->
+<script src="airlab-config.js"></script>
+<style>
+:root{
+  --navy:#080f1e;--navy-2:#0d1628;--navy-3:#111d35;
+  --gold:#c8a84b;--gold-l:#e2c47a;--gold-dim:rgba(200,168,75,0.12);
+  --gold-b:rgba(200,168,75,0.22);
+  --white:#f0eeea;--w60:rgba(240,238,234,0.6);--w30:rgba(240,238,234,0.3);--w10:rgba(240,238,234,0.07);
+  --green:#3ecf8e;--red:#e05252;--r:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:var(--navy);color:var(--white);font-family:'Sora',sans-serif;display:flex;min-height:100vh;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.35;}
+
+/* LEFT PANEL */
+.left-panel{flex:1;display:flex;flex-direction:column;padding:48px 56px;background:var(--navy-2);border-right:1px solid var(--gold-b);position:relative;overflow:hidden;}
+.left-panel::before{content:'';position:absolute;top:-20%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(200,168,75,0.09) 0%,transparent 65%);pointer-events:none;}
+.panel-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{width:34px;height:34px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--navy);}
+.logo-text{font-size:.95rem;font-weight:700;letter-spacing:-.02em;}
+.logo-text span{color:var(--gold);}
+.panel-content{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;padding:40px 0;}
+.panel-tag{display:inline-flex;align-items:center;gap:7px;background:var(--gold-dim);border:1px solid var(--gold-b);border-radius:100px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gold-l);width:fit-content;margin-bottom:22px;}
+.tag-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.panel-headline{font-size:clamp(1.7rem,3vw,2.6rem);font-weight:800;letter-spacing:-.04em;line-height:1.15;margin-bottom:18px;}
+.panel-headline em{font-style:normal;color:var(--gold);}
+.panel-desc{font-size:.9rem;color:var(--w60);line-height:1.7;max-width:420px;margin-bottom:36px;}
+.feat-list{display:flex;flex-direction:column;gap:14px;margin-bottom:36px;}
+.feat-item{display:flex;align-items:flex-start;gap:12px;}
+.feat-icon{width:32px;height:32px;border-radius:8px;flex-shrink:0;background:var(--gold-dim);border:1px solid var(--gold-b);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.feat-text h4{font-size:.825rem;font-weight:700;margin-bottom:2px;}
+.feat-text p{font-size:.75rem;color:var(--w60);line-height:1.5;}
+.standards-row{display:flex;gap:8px;flex-wrap:wrap;padding-top:24px;border-top:1px solid var(--gold-b);}
+.std{background:var(--navy-3);border:1px solid rgba(200,168,75,.15);border-radius:5px;padding:4px 10px;font-size:.65rem;font-weight:700;color:var(--w60);letter-spacing:.04em;font-family:'DM Mono',monospace;}
+
+/* RIGHT PANEL */
+.right-panel{width:480px;min-width:480px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 52px;position:relative;overflow-y:auto;}
+.back-home{position:absolute;top:24px;left:24px;display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--w60);text-decoration:none;transition:color .2s;}
+.back-home:hover{color:var(--gold);}
+
+/* Toggle */
+.mode-toggle{display:flex;background:var(--w10);border:1px solid var(--gold-b);border-radius:var(--r);padding:4px;margin-bottom:28px;width:100%;}
+.mode-btn{flex:1;padding:10px;border-radius:7px;text-align:center;font-family:'Sora',sans-serif;font-size:.825rem;font-weight:600;cursor:pointer;transition:all .22s;color:var(--w60);border:none;background:transparent;}
+.mode-btn.active{background:var(--navy-3);color:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.3);}
+
+.form-head{text-align:center;margin-bottom:24px;}
+.form-head h2{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;}
+.form-head p{font-size:.82rem;color:var(--w60);}
+
+/* Google */
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--w10);border:1px solid var(--gold-b);border-radius:var(--r);padding:11px;cursor:pointer;transition:all .2s;font-family:'Sora',sans-serif;font-size:.85rem;font-weight:600;color:var(--white);margin-bottom:20px;}
+.google-btn:hover{background:rgba(240,238,234,.1);border-color:rgba(200,168,75,.4);}
+.google-btn:disabled{opacity:.5;cursor:not-allowed;}
+.g-icon{width:20px;height:20px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#4285f4;flex-shrink:0;}
+.or-div{display:flex;align-items:center;gap:12px;margin-bottom:20px;color:var(--w30);font-size:.75rem;font-weight:600;}
+.or-div::before,.or-div::after{content:'';flex:1;height:1px;background:var(--gold-b);}
+
+/* Fields */
+.form-group{margin-bottom:15px;position:relative;}
+.form-label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--w60);margin-bottom:7px;}
+.form-input{width:100%;background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r);padding:11px 14px;font-family:'Sora',sans-serif;font-size:.875rem;color:var(--white);outline:none;transition:all .2s;}
+.form-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.form-input::placeholder{color:var(--w30);}
+.form-input.err{border-color:var(--red);}
+.eye-btn{position:absolute;right:12px;bottom:11px;cursor:pointer;color:var(--w30);font-size:14px;transition:color .2s;background:none;border:none;}
+.eye-btn:hover{color:var(--w60);}
+.field-err{font-size:.7rem;color:var(--red);margin-top:4px;display:none;}
+.show-err .field-err{display:block;}
+.name-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* PW strength */
+.pw-bars{display:flex;gap:4px;margin-top:8px;}
+.pw-bar{flex:1;height:3px;border-radius:2px;background:var(--w10);transition:background .3s;}
+.pw-label{font-size:.68rem;color:var(--w30);margin-top:4px;}
+
+/* Checkbox */
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;}
+.check-box{width:18px;height:18px;border:1px solid var(--gold-b);border-radius:4px;background:var(--navy-2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;margin-top:2px;}
+.check-box.on{background:var(--gold);border-color:var(--gold);}
+.check-box.on::after{content:'✓';font-size:10px;color:var(--navy);font-weight:800;}
+.check-text{font-size:.775rem;color:var(--w60);line-height:1.5;}
+.check-text a{color:var(--gold);text-decoration:none;}
+
+/* Submit */
+.submit-btn{width:100%;background:var(--gold);border:none;color:var(--navy);padding:13px;border-radius:var(--r);font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover:not(:disabled){background:var(--gold-l);transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.loader{width:16px;height:16px;border:2px solid var(--navy);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Error banner */
+.error-banner{background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:11px 14px;font-size:.8rem;color:#e07070;margin-bottom:16px;display:none;}
+.error-banner.show{display:block;}
+
+.form-footer{margin-top:16px;text-align:center;font-size:.78rem;color:var(--w60);}
+.form-footer a{color:var(--gold);text-decoration:none;font-weight:600;cursor:pointer;}
+
+/* Forgot */
+.forgot-link{font-size:.75rem;color:var(--gold);text-decoration:none;float:right;font-weight:600;cursor:pointer;}
+
+/* Success */
+.success-screen{display:none;flex-direction:column;align-items:center;text-align:center;width:100%;}
+.suc-icon{width:64px;height:64px;background:rgba(62,207,142,.12);border:2px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;}
+.suc-title{font-size:1.2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;}
+.suc-desc{font-size:.85rem;color:var(--w60);line-height:1.7;margin-bottom:24px;}
+.btn-dash{background:var(--gold);border:none;color:var(--navy);padding:12px 32px;border-radius:var(--r);font-family:'Sora',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-dash:hover{background:var(--gold-l);}
+
+@media(max-width:900px){.left-panel{display:none;}.right-panel{width:100%;min-width:0;padding:40px 28px;min-height:100vh;}.back-home{position:static;margin-bottom:16px;}}
+</style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left-panel">
+  <a class="panel-logo" href="/">
+    <div class="logo-icon">A</div>
+    <div class="logo-text">AirLab <span>Pro</span></div>
+  </a>
+  <div class="panel-content">
+    <div class="panel-tag"><div class="tag-dot"></div>by AirBalance Albania</div>
+    <h1 class="panel-headline">Raportet IAQ<br/>profesionale<br/>në <em>minuta</em></h1>
+    <p class="panel-desc">Score Engine bazuar në ASHRAE 62.1 dhe WHO IAQ 2021. Analiza AI, raporte PDF me brandin tuaj.</p>
+    <div class="feat-list">
+      <div class="feat-item"><div class="feat-icon">⚡</div><div class="feat-text"><h4>Score Engine i çertifikuar</h4><p>ASHRAE 62.1, WHO IAQ 2021, EN 16798</p></div></div>
+      <div class="feat-item"><div class="feat-icon">🤖</div><div class="feat-text"><h4>Analizë AI për çdo dhomë</h4><p>Rekomandime konkrete — jo gjenerike</p></div></div>
+      <div class="feat-item"><div class="feat-icon">📄</div><div class="feat-text"><h4>PDF profesional me logon tuaj</h4><p>Gati për klientin me një klikim</p></div></div>
+    </div>
+    <div class="standards-row">
+      <span class="std">ASHRAE 62.1</span>
+      <span class="std">WHO IAQ 2021</span>
+      <span class="std">EN 16798</span>
+      <span class="std">ISO 16000</span>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+  <a class="back-home" href="/">← Kryefaqja</a>
+
+  <div class="mode-toggle">
+    <button class="mode-btn" id="btn-si" onclick="setMode('si')">Hyr në llogari</button>
+    <button class="mode-btn active" id="btn-su" onclick="setMode('su')">Regjistrohu</button>
+  </div>
+
+  <!-- ERROR BANNER -->
+  <div class="error-banner" id="err-banner"></div>
+
+  <!-- ── SIGNIN ── -->
+  <div id="view-si" style="display:none;width:100%;">
+    <div class="form-head"><h2>Mirë se erdhe 👋</h2><p>Hyr për të vazhduar në AirLab Pro</p></div>
+    <button class="google-btn" id="g-si" onclick="googleLogin()"><div class="g-icon">G</div>Vazhdo me Google</button>
+    <div class="or-div">ose me email</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="si-email" placeholder="emri@kompania.al"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">
+        Fjalëkalimi
+        <span class="forgot-link" onclick="setMode('forgot')">Harrova fjalëkalimin</span>
+      </label>
+      <input class="form-input" type="password" id="si-pw" placeholder="••••••••"/>
+      <button class="eye-btn" onclick="togglePw('si-pw',this)">👁</button>
+    </div>
+    <button class="submit-btn" id="si-btn" onclick="doSignin()">
+      <span id="si-lbl">Hyr në llogari</span>
+      <div class="loader" id="si-load"></div>
+    </button>
+    <div class="form-footer">Nuk ke llogari? <a onclick="setMode('su')">Regjistrohu falas →</a></div>
+  </div>
+
+  <!-- ── SIGNUP ── -->
+  <div id="view-su" style="width:100%;">
+    <div class="form-head"><h2>Fillo falas sot</h2><p>5 raporte/muaj · Pa kartë krediti</p></div>
+    <button class="google-btn" id="g-su" onclick="googleLogin()"><div class="g-icon">G</div>Regjistrohu me Google</button>
+    <div class="or-div">ose me email</div>
+    <div class="name-row">
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Emri</label><input class="form-input" type="text" id="su-fn" placeholder="Ardit"/></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Mbiemri</label><input class="form-input" type="text" id="su-ln" placeholder="Balla"/></div>
+    </div>
+    <div style="margin-bottom:15px;"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="su-email" placeholder="emri@kompania.al"/></div>
+    <div class="form-group"><label class="form-label">Kompania (opsionale)</label><input class="form-input" type="text" id="su-co" placeholder="AirBalance Albania"/></div>
+    <div class="form-group">
+      <label class="form-label">Fjalëkalimi</label>
+      <input class="form-input" type="password" id="su-pw" placeholder="Min. 8 karaktere" oninput="pwStrength()"/>
+      <button class="eye-btn" onclick="togglePw('su-pw',this)">👁</button>
+      <div class="pw-bars"><div class="pw-bar" id="pb1"></div><div class="pw-bar" id="pb2"></div><div class="pw-bar" id="pb3"></div><div class="pw-bar" id="pb4"></div></div>
+      <div class="pw-label" id="pw-lbl">Vendos fjalëkalimin</div>
+    </div>
+    <div class="check-row">
+      <div class="check-box" id="terms-cb" onclick="this.classList.toggle('on')"></div>
+      <div class="check-text">Pranoj <a href="/terms" target="_blank">Kushtet e Shërbimit</a> dhe <a href="/privacy" target="_blank">Politikën e Privatësisë</a>.</div>
+    </div>
+    <button class="submit-btn" id="su-btn" onclick="doSignup()">
+      <span id="su-lbl">Krijo Llogari Falas</span>
+      <div class="loader" id="su-load"></div>
+    </button>
+    <div class="form-footer">Ke llogari? <a onclick="setMode('si')">Hyr →</a></div>
+  </div>
+
+  <!-- ── FORGOT ── -->
+  <div id="view-forgot" style="display:none;width:100%;">
+    <div class="form-head"><h2>Rivendos fjalëkalimin</h2><p>Do të dërgojmë link rivendosjeje</p></div>
+    <div class="form-group"><label class="form-label">Email i llogarisë</label><input class="form-input" type="email" id="fg-email" placeholder="emri@kompania.al"/></div>
+    <button class="submit-btn" id="fg-btn" onclick="doForgot()">
+      <span id="fg-lbl">Dërgo Linkun</span>
+      <div class="loader" id="fg-load"></div>
+    </button>
+    <div class="form-footer"><a onclick="setMode('si')">← Kthehu te hyrja</a></div>
+  </div>
+
+  <!-- ── SUCCESS ── -->
+  <div class="success-screen" id="view-ok">
+    <div class="suc-icon">✓</div>
+    <div class="suc-title" id="ok-title">Llogaria u krijua!</div>
+    <div class="suc-desc" id="ok-desc">Mirë se vini! Plani Falas është aktiv — 5 raporte IAQ/muaj pa asnjë kosto.</div>
+    <button class="btn-dash" id="ok-btn" onclick="window.location.href='/dashboard'">Hap Dashboard-in →</button>
+  </div>
+
+</div><!-- /right -->
+
+<script>
+// ── Init Supabase ──
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── Check existing session → redirect ──
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) window.location.href = '/dashboard';
+})();
+
+// ── Mode switch ──
+let currentMode = 'su';
+function setMode(m) {
+  currentMode = m;
+  ['si','su','forgot','ok'].forEach(v =>
+    document.getElementById('view-'+v).style.display = v===m ? 'block' : 'none'
+  );
+  if (m==='ok') document.getElementById('view-ok').style.display = 'flex';
+  document.getElementById('btn-si').classList.toggle('active', m==='si');
+  document.getElementById('btn-su').classList.toggle('active', m==='su');
+  hideErr();
+}
+setMode('su');
+
+// ── Helpers ──
+function setLoading(btnId, loadId, lblId, on) {
+  document.getElementById(btnId).disabled = on;
+  document.getElementById(loadId).style.display = on ? 'block' : 'none';
+  document.getElementById(lblId).style.display = on ? 'none' : 'inline';
+}
+function showErr(msg) {
+  const el = document.getElementById('err-banner');
+  el.textContent = msg; el.classList.add('show');
+}
+function hideErr() {
+  document.getElementById('err-banner').classList.remove('show');
+}
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function pwStrength() {
+  const pw = document.getElementById('su-pw').value;
+  let s = 0;
+  if (pw.length >= 8) s++;
+  if (/[A-Z]/.test(pw)) s++;
+  if (/[0-9]/.test(pw)) s++;
+  if (/[^A-Za-z0-9]/.test(pw)) s++;
+  const cols = ['','#e05252','#e0c052','#c8a84b','#3ecf8e'];
+  const labs = ['','E dobët','Mesatare','E mirë','Shumë e fortë'];
+  [1,2,3,4].forEach(i => {
+    document.getElementById('pb'+i).style.background = i<=s ? cols[s] : 'var(--w10)';
+  });
+  document.getElementById('pw-lbl').textContent = pw.length===0 ? 'Vendos fjalëkalimin' : labs[s];
+  document.getElementById('pw-lbl').style.color = s>0 ? cols[s] : 'var(--w30)';
+}
+
+// ── Google OAuth ──
+async function googleLogin() {
+  hideErr();
+  document.querySelectorAll('.google-btn').forEach(b => b.disabled = true);
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + '/dashboard' }
+  });
+  if (error) { showErr('Ndodhi një gabim me Google: ' + error.message); }
+  document.querySelectorAll('.google-btn').forEach(b => b.disabled = false);
+}
+
+// ── Sign In ──
+async function doSignin() {
+  hideErr();
+  const email = document.getElementById('si-email').value.trim();
+  const pw    = document.getElementById('si-pw').value;
+  if (!email || !pw) { showErr('Plotësoni të dy fushat.'); return; }
+  setLoading('si-btn','si-load','si-lbl', true);
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+  setLoading('si-btn','si-load','si-lbl', false);
+  if (error) {
+    const msgs = {
+      'Invalid login credentials': 'Email ose fjalëkalim i gabuar.',
+      'Email not confirmed':        'Konfirmoni email-in tuaj para hyrjes.',
+    };
+    showErr(msgs[error.message] || error.message);
+    return;
+  }
+  // Success
+  document.getElementById('ok-title').textContent = 'Mirë se u ktheve! 👋';
+  document.getElementById('ok-desc').textContent  = 'Hyrja u krye. Duke të ridrejtuar...';
+  setMode('ok');
+  setTimeout(() => window.location.href = '/dashboard', 1200);
+}
+
+// ── Sign Up ──
+async function doSignup() {
+  hideErr();
+  const fname = document.getElementById('su-fn').value.trim();
+  const lname = document.getElementById('su-ln').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pw    = document.getElementById('su-pw').value;
+  const co    = document.getElementById('su-co').value.trim();
+  const terms = document.getElementById('terms-cb').classList.contains('on');
+
+  if (!email || !pw)   { showErr('Email dhe fjalëkalimi janë të detyrueshëm.'); return; }
+  if (pw.length < 8)   { showErr('Fjalëkalimi duhet të ketë minimumi 8 karaktere.'); return; }
+  if (!terms)          { showErr('Duhet të pranoni Kushtet e Shërbimit.'); return; }
+
+  setLoading('su-btn','su-load','su-lbl', true);
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password: pw,
+    options: {
+      data: {
+        full_name: `${fname} ${lname}`.trim() || email.split('@')[0],
+        company:   co,
+      },
+      emailRedirectTo: window.location.origin + '/dashboard',
+    }
+  });
+
+  setLoading('su-btn','su-load','su-lbl', false);
+
+  if (error) {
+    const msgs = {
+      'User already registered': 'Ky email është regjistruar. Provo të hysh.',
+      'Password should be at least 6 characters': 'Fjalëkalimi shumë i shkurtër.',
+    };
+    showErr(msgs[error.message] || error.message);
+    return;
+  }
+
+  // If email confirmation required
+  if (data.user && !data.session) {
+    document.getElementById('ok-title').textContent = 'Kontrolloni email-in! 📧';
+    document.getElementById('ok-desc').innerHTML =
+      `Dërguam email konfirmimi tek <strong>${email}</strong>.<br/>Klikoni linkun për të aktivizuar llogarinë.`;
+    document.getElementById('ok-btn').textContent = 'Kthehu te hyrja →';
+    document.getElementById('ok-btn').onclick = () => setMode('si');
+  } else {
+    // Auto-confirmed (email confirm disabled in Supabase settings)
+    document.getElementById('ok-title').textContent = 'Llogaria u krijua! 🎉';
+    document.getElementById('ok-desc').innerHTML =
+      'Mirë se vini në AirLab Pro. Plani Falas — 5 raporte/muaj pa kosto.';
+    document.getElementById('ok-btn').onclick = () => window.location.href = '/dashboard';
+  }
+  setMode('ok');
+}
+
+// ── Forgot Password ──
+async function doForgot() {
+  hideErr();
+  const email = document.getElementById('fg-email').value.trim();
+  if (!email) { showErr('Vendosni email-in e llogarisë.'); return; }
+  setLoading('fg-btn','fg-load','fg-lbl', true);
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/reset-password',
+  });
+  setLoading('fg-btn','fg-load','fg-lbl', false);
+  if (error) { showErr(error.message); return; }
+  document.getElementById('ok-title').textContent = 'Email-i u dërgua! 📧';
+  document.getElementById('ok-desc').textContent  =
+    'Kemi dërguar linkun e rivendosjes. Kontrolloni edhe dosjen Spam.';
+  document.getElementById('ok-btn').textContent   = '← Kthehu te hyrja';
+  document.getElementById('ok-btn').onclick       = () => setMode('si');
+  setMode('ok');
+}
+
+// Read ?mode= param
+const p = new URLSearchParams(location.search);
+if (p.get('mode') === 'signin') setMode('si');
+</script>
+</body>
+</html>

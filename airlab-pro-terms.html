@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kushtet e Shërbimit — AirLab Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#080f1e;--navy-2:#0d1628;--navy-3:#111d35;--navy-4:#162240;
+  --gold:#c8a84b;--gold-light:#e2c47a;--gold-dim:rgba(200,168,75,0.15);
+  --gold-border:rgba(200,168,75,0.25);--white:#f0eeea;
+  --white-dim:rgba(240,238,234,0.65);--radius:10px;--radius-lg:18px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--navy);color:var(--white);font-family:'Sora',sans-serif;line-height:1.7;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:64px;background:rgba(8,15,30,0.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--gold-border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--navy);}
+.nav-logo-text{font-size:1rem;font-weight:700;color:var(--white);letter-spacing:-0.02em;}
+.nav-logo-text span{color:var(--gold);}
+.nav-back{color:var(--white-dim);text-decoration:none;font-size:0.85rem;font-weight:500;display:flex;align-items:center;gap:6px;transition:color 0.2s;}
+.nav-back:hover{color:var(--gold);}
+
+.page-wrap{max-width:820px;margin:0 auto;padding:110px 5% 80px;}
+
+.doc-header{margin-bottom:56px;padding-bottom:32px;border-bottom:1px solid var(--gold-border);}
+.doc-type{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.doc-type::before{content:'';width:24px;height:1px;background:var(--gold);}
+.doc-header h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-0.04em;color:var(--white);margin-bottom:12px;}
+.doc-meta{display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;}
+.doc-meta-item{display:flex;flex-direction:column;gap:3px;}
+.doc-meta-label{font-size:0.7rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);opacity:0.7;}
+.doc-meta-value{font-size:0.85rem;color:var(--white-dim);font-family:'DM Mono',monospace;}
+
+.toc{background:var(--navy-2);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:52px;}
+.toc-title{font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.toc-list a{color:var(--white-dim);text-decoration:none;font-size:0.875rem;display:flex;align-items:center;gap:10px;transition:color 0.2s;}
+.toc-list a:hover{color:var(--gold);}
+.toc-num{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);opacity:0.6;min-width:22px;}
+
+.doc-section{margin-bottom:52px;scroll-margin-top:80px;}
+.doc-section h2{font-size:1.2rem;font-weight:700;letter-spacing:-0.02em;color:var(--white);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.sec-num{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:5px;padding:2px 8px;}
+.doc-section p{font-size:0.9rem;color:var(--white-dim);margin-bottom:14px;}
+.doc-section ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin:14px 0;}
+.doc-section ul li{font-size:0.875rem;color:var(--white-dim);display:flex;align-items:flex-start;gap:10px;padding-left:4px;}
+.doc-section ul li::before{content:'—';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px;}
+.doc-section strong{color:var(--white);font-weight:600;}
+.doc-section a{color:var(--gold);text-decoration:none;}
+.doc-section a:hover{text-decoration:underline;}
+
+.info-box{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--radius);padding:18px 22px;margin:20px 0;font-size:0.875rem;color:var(--white-dim);}
+.info-box strong{color:var(--gold-light);}
+.warn-box{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-radius:var(--radius);padding:18px 22px;margin:20px 0;font-size:0.875rem;color:var(--white-dim);}
+.warn-box strong{color:#e05252;}
+
+.divider{height:1px;background:var(--gold-border);margin:52px 0;}
+
+footer{border-top:1px solid var(--gold-border);padding:32px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.footer-brand{font-size:0.875rem;font-weight:700;color:var(--white);}
+.footer-brand span{color:var(--gold);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:0.8rem;color:var(--white-dim);text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--gold);}
+.footer-copy{font-size:0.75rem;color:rgba(240,238,234,0.35);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <div class="nav-logo-icon">A</div>
+    <div class="nav-logo-text">AirLab <span>Pro</span></div>
+  </a>
+  <a class="nav-back" href="/">← Kthehu në kryefaqe</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="doc-header">
+    <div class="doc-type">Dokument ligjor</div>
+    <h1>Kushtet e Shërbimit</h1>
+    <p style="color:var(--white-dim);font-size:0.95rem;max-width:600px;">
+      Duke u regjistruar ose duke përdorur AirLab Pro, pranoni këto kushte. Ju lutemi lexojini me kujdes para se të filloni.
+    </p>
+    <div class="doc-meta">
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Versioni</span>
+        <span class="doc-meta-value">v1.0</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Hyrë në fuqi</span>
+        <span class="doc-meta-value">01 Maj 2026</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Ofruesi i Shërbimit</span>
+        <span class="doc-meta-value">AirBalance Albania</span>
+      </div>
+      <div class="doc-meta-item">
+        <span class="doc-meta-label">Legjislacioni</span>
+        <span class="doc-meta-value">Ligji Shqiptar / BE</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Tabela e përmbajtjes</div>
+    <ol class="toc-list">
+      <li><a href="#t1"><span class="toc-num">01</span> Pranimi i kushteve</a></li>
+      <li><a href="#t2"><span class="toc-num">02</span> Përshkrimi i shërbimit</a></li>
+      <li><a href="#t3"><span class="toc-num">03</span> Llogaritë dhe aksesi</a></li>
+      <li><a href="#t4"><span class="toc-num">04</span> Planet dhe pagesa</a></li>
+      <li><a href="#t5"><span class="toc-num">05</span> Përdorimi i pranueshëm</a></li>
+      <li><a href="#t6"><span class="toc-num">06</span> Pronësia intelektuale</a></li>
+      <li><a href="#t7"><span class="toc-num">07</span> Të dhënat tuaja dhe raportet</a></li>
+      <li><a href="#t8"><span class="toc-num">08</span> Kufizimi i garancisë</a></li>
+      <li><a href="#t9"><span class="toc-num">09</span> Kufizimi i përgjegjësisë</a></li>
+      <li><a href="#t10"><span class="toc-num">10</span> Pezullimi dhe mbyllja</a></li>
+      <li><a href="#t11"><span class="toc-num">11</span> Ndryshimet në shërbim</a></li>
+      <li><a href="#t12"><span class="toc-num">12</span> Ligji i zbatueshëm</a></li>
+      <li><a href="#t13"><span class="toc-num">13</span> Kontakti</a></li>
+    </ol>
+  </div>
+
+  <div class="info-box">
+    <strong>Përmbledhje:</strong> Ju ofrojmë platformën IAQ. Ju na jepni të drejtën të përpunojmë matjet tuaja. Nuk garantojmë saktësi absolute të rezultateve — raportet janë mbështetje profesionale, jo zëvendësuese e ekspertizës inxhinierike.
+  </div>
+
+  <!-- T1 -->
+  <div class="doc-section" id="t1">
+    <h2><span class="sec-num">01</span> Pranimi i kushteve</h2>
+    <p>Duke krijuar një llogari ose duke përdorur platformat AirLab Pro, ju pranoni të jeni të lidhur me këto Kushte të Shërbimit dhe <a href="/privacy">Politikën e Privatësisë</a>.</p>
+    <p>Nëse nuk pranoni këto kushte, nuk duhet të përdorni shërbimin. Nëse jeni duke vepruar në emër të një kompanie, sigurohuni se keni autoritetin të pranoni këto kushte në emër të saj.</p>
+    <p>Moshë minimale: duhet të jeni të paktën <strong>18 vjeç</strong> për të hapur llogari.</p>
+  </div>
+
+  <!-- T2 -->
+  <div class="doc-section" id="t2">
+    <h2><span class="sec-num">02</span> Përshkrimi i shërbimit</h2>
+    <p>AirLab Pro është një platformë SaaS (Software as a Service) e ofruar nga AirBalance Albania, që mundëson:</p>
+    <ul>
+      <li>Vlerësimin e Cilësisë së Ajrit të Brendshëm (IAQ) nëpërmjet Score Engine</li>
+      <li>Gjenerimin e raporteve PDF profesionale sipas standardeve ndërkombëtare</li>
+      <li>Analizën me Inteligjencë Artificiale të matjeve IAQ</li>
+      <li>Menaxhimin e portofolit të klientëve dhe historikut të raporteve</li>
+      <li>Import të matjeve nga senzorë dhe eksport në formate të ndryshme</li>
+    </ul>
+    <div class="warn-box">
+      <strong>Kufizim i rëndësishëm:</strong> AirLab Pro ofron analiza dhe rekomandime si <strong>mbështetje profesionale</strong>. Raportet nuk zëvendësojnë inspektimin fizik nga inxhinier i licencuar, dhe nuk mund të përdoren si dokument i vetëm certifikimi ligjor pa verifikim profesional të pavarur.
+    </div>
+  </div>
+
+  <!-- T3 -->
+  <div class="doc-section" id="t3">
+    <h2><span class="sec-num">03</span> Llogaritë dhe aksesi</h2>
+    <p>Për të përdorur AirLab Pro duhet të krijoni llogari me informacion të saktë dhe të plotë. Jeni përgjegjës:</p>
+    <ul>
+      <li>Për konfidencialitetin e fjalëkalimit dhe aksesit të llogarisë suaj</li>
+      <li>Për të gjitha veprimet e kryera nën llogarinë tuaj</li>
+      <li>Për të na njoftuar menjëherë nëse dyshoni akses të paautorizuar</li>
+    </ul>
+    <p>Nuk lejohet ndarja e llogarisë me persona të tjerë. Plani Enterprise mundëson shumë-përdorues nëpërmjet funksionit të ekipit.</p>
+  </div>
+
+  <!-- T4 -->
+  <div class="doc-section" id="t4">
+    <h2><span class="sec-num">04</span> Planet dhe pagesa</h2>
+    <p><strong>Plani Falas</strong> ofron 5 raporte/muaj pa pagesë. Nuk kërkohet kartë krediti.</p>
+    <p><strong>Planet e paguara</strong> (Pro, Enterprise) faturihen mujor. Çmimet janë:</p>
+    <ul>
+      <li>Pro: €9.99/muaj (≈ 1,100 Lekë)</li>
+      <li>Enterprise: €49.99/muaj (≈ 5,500 Lekë)</li>
+    </ul>
+    <p><strong>Trial falas:</strong> Plani Pro vjen me 14 ditë provë pa faturim. Anulimi para ditës 14 = pa ngarkesë.</p>
+    <p><strong>Rinovimi:</strong> Abonimi rinovohet automatikisht çdo muaj derisa ta anuloni. Anulimi hyn në fuqi në fund të periudhës aktuale të faturimit.</p>
+    <p><strong>Rimbursime:</strong> Nuk ofrojmë rimbursim për periudhat e kaluara të faturimit, me përjashtim të rasteve të parashikuara nga legjislacioni i konsumatorëve të BE.</p>
+    <p>Pagesat procesohen nga <strong>Stripe</strong>. Nëse pagesa dështon, do të njoftoheni dhe do të keni 7 ditë për ta rregulluar para pezullimit të llogarisë.</p>
+  </div>
+
+  <!-- T5 -->
+  <div class="doc-section" id="t5">
+    <h2><span class="sec-num">05</span> Përdorimi i pranueshëm</h2>
+    <p>Pranoni të <strong>mos</strong> përdorni AirLab Pro për:</p>
+    <ul>
+      <li>Gjenerimin e raporteve me të dhëna false ose të manipuluara me qëllim mashtrimi</li>
+      <li>Shkeljen e të drejtave të pronësisë intelektuale të AirBalance Albania ose palëve të treta</li>
+      <li>Ndarjen ose rishitjen e aksesit të platformës pa autorizim të shkruar</li>
+      <li>Reverse engineering, dekompilim ose tentativë për të nxjerrë kodin burimor</li>
+      <li>Automatizimin e aksesit nëpërmjet bot-ësh ose skriptesh pa API key të autorizuar</li>
+      <li>Çdo veprim që dëmton, ngadalëson ose ndërhyn në infrastrukturën e platformës</li>
+    </ul>
+    <p>Shkelja e këtyre kushteve mund të rezultojë në pezullim ose mbyllje të llogarisë pa njoftim paraprak.</p>
+  </div>
+
+  <!-- T6 -->
+  <div class="doc-section" id="t6">
+    <h2><span class="sec-num">06</span> Pronësia intelektuale</h2>
+    <p><strong>AirBalance Albania</strong> zotëron të gjitha të drejtat e pronësisë intelektuale mbi platformën AirLab Pro, duke përfshirë kodin, dizajnin, algoritmet e Score Engine dhe emrat tregtarë.</p>
+    <p><strong>Raportet e gjeneruara:</strong> Raportet PDF dhe analizat e prodhuara nga platforma janë pronë e juaja. Ju jeni të lirë t'i përdorni, publikoni dhe t'ia dorëzoni klientëve tuaj.</p>
+    <p><strong>Të dhënat e matjeve:</strong> Të dhënat IAQ që ngarkoni mbeten pronë juaja. Ne kemi të drejtë t'i përdorim ato të anonimizuara për përmirësimin e algoritmeve (shih Politikën e Privatësisë).</p>
+    <p>Logot, markat dhe emrat e AirLab Pro dhe AirBalance Albania nuk mund të përdoren pa leje të shkruar.</p>
+  </div>
+
+  <!-- T7 -->
+  <div class="doc-section" id="t7">
+    <h2><span class="sec-num">07</span> Të dhënat tuaja dhe raportet</h2>
+    <p>Garantojmë që:</p>
+    <ul>
+      <li>Të dhënat tuaja IAQ janë të izoluara nga llogaritë e tjera</li>
+      <li>Nuk i shesim ose ndajmë raportet tuaja me palë të treta</li>
+      <li>Mund të eksportoni të gjitha të dhënat tuaja në çdo kohë</li>
+      <li>Pas mbylljes së llogarisë, të dhënat fshihen brenda 30 ditëve</li>
+    </ul>
+    <p>Ju garantoni që matjet IAQ që ngarkoni janë të mbledhura në mënyrë të ligjshme dhe nuk shkelni privatësinë e personave të tjerë.</p>
+  </div>
+
+  <!-- T8 -->
+  <div class="doc-section" id="t8">
+    <h2><span class="sec-num">08</span> Kufizimi i garancisë</h2>
+    <p>AirLab Pro ofrohet <strong>"siç është"</strong> dhe <strong>"sipas disponueshmërisë"</strong>. Nuk garantojmë:</p>
+    <ul>
+      <li>Disponueshmëri 100% të platformës (synojmë 99.5% uptime mujor)</li>
+      <li>Saktësi absolute të Score Engine — rezultatet varen nga cilësia e të dhënave të ngarkuara</li>
+      <li>Pajtueshmëri me të gjitha kërkesat specifike rregullatore të vendeve të ndryshme</li>
+    </ul>
+    <div class="warn-box">
+      <strong>E rëndësishme:</strong> Score-t dhe raportet IAQ janë mjete mbështetëse profesionale. Vendimet inxhinierike, arkitekturale ose ligjore duhet të konfirmohen nga ekspertë të licencuar. AirBalance Albania nuk mban përgjegjësi për vendime të marra bazuar vetëm në output-in e platformës.
+    </div>
+  </div>
+
+  <!-- T9 -->
+  <div class="doc-section" id="t9">
+    <h2><span class="sec-num">09</span> Kufizimi i përgjegjësisë</h2>
+    <p>Në masën maksimale të lejuar nga ligji, AirBalance Albania nuk mban përgjegjësi për:</p>
+    <ul>
+      <li>Humbje indirekte, aksidentale ose konsekuenciale që rrjedhin nga përdorimi i platformës</li>
+      <li>Humbje të fitimit, të dhënave ose mundësive biznesi</li>
+      <li>Çdo dëm që kalon shumën e tarifave të paguara në 3 muajt e fundit</li>
+    </ul>
+    <p>Kjo kufizim nuk zbatohet për rastet e neglizhencës së rëndë ose qëllimit të keq nga ana jonë, ose për të drejtat e konsumatorëve sipas legjislacionit të BE.</p>
+  </div>
+
+  <!-- T10 -->
+  <div class="doc-section" id="t10">
+    <h2><span class="sec-num">10</span> Pezullimi dhe mbyllja</h2>
+    <p><strong>Nga ana juaj:</strong> Mund të mbyllni llogarinë në çdo kohë nga cilësimet e profilit. Mbyllja hyn në fuqi menjëherë; periudha aktuale e faturimit nuk rimburshet.</p>
+    <p><strong>Nga ana jonë:</strong> Rezervojmë të drejtën të pezullojmë ose mbyllim llogarinë nëse:</p>
+    <ul>
+      <li>Shkelen kushtet e përdorimit të pranueshëm (seksioni 5)</li>
+      <li>Pagesa mbetet e papaguar për më shumë se 14 ditë pas njoftimit</li>
+      <li>Llogaria përdoret në mënyrë mashtruese ose keqdashëse</li>
+    </ul>
+    <p>Në rastet e shkeljes së rëndë, pezullimi mund të jetë i menjëhershëm dhe pa njoftim paraprak.</p>
+  </div>
+
+  <!-- T11 -->
+  <div class="doc-section" id="t11">
+    <h2><span class="sec-num">11</span> Ndryshimet në shërbim</h2>
+    <p>Rezervojmë të drejtën të modifikojmë, shtojmë ose heqim funksionalitete të platformës. Ndryshimet materiale do t'ju njoftojmë 30 ditë paraprakisht.</p>
+    <p>Ndryshimet në çmime njoftohen të paktën 60 ditë paraprakisht, duke ju dhënë mundësinë të anuloni pa ngarkesë shtesë.</p>
+  </div>
+
+  <!-- T12 -->
+  <div class="doc-section" id="t12">
+    <h2><span class="sec-num">12</span> Ligji i zbatueshëm dhe zgjidhja e mosmarrëveshjeve</h2>
+    <p>Këto kushte rregullohen nga <strong>legjislacioni i Republikës së Shqipërisë</strong>, në pajtueshmëri me direktivat përkatëse të Bashkimit Europian.</p>
+    <p>Mosmarrëveshjet do të zgjidhen fillimisht nëpërmjet negociatave të mira besimtare. Nëse nuk arrihet marrëveshje brenda 30 ditëve, çështja i kalon juridiksionit ekskluziv të <strong>gjykatave të Tiranës</strong>.</p>
+    <p>Nëse jeni konsumator rezident i BE, mund të drejtoheni gjithashtu tek platforma e zgjidhjes online të mosmarrëveshjeve të KE: <a href="https://ec.europa.eu/consumers/odr" target="_blank">ec.europa.eu/consumers/odr</a></p>
+  </div>
+
+  <!-- T13 -->
+  <div class="doc-section" id="t13">
+    <h2><span class="sec-num">13</span> Kontakti</h2>
+    <p>Për pyetje lidhur me këto kushte:</p>
+    <ul>
+      <li><strong>Email:</strong> <a href="mailto:info@airbalance.al">info@airbalance.al</a></li>
+      <li><strong>Subjekti:</strong> [Kushtet e Shërbimit] — [çështja juaj]</li>
+      <li><strong>Koha e përgjigjes:</strong> brenda 10 ditëve pune</li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+  <p style="font-size:0.8rem;color:var(--white-dim);text-align:center;">
+    AirBalance Albania · Tiranë, Shqipëri · <a href="mailto:info@airbalance.al" style="color:var(--gold);">info@airbalance.al</a>
+    <br/>Versioni 1.0 · Hyrë në fuqi: 01 Maj 2026
+  </p>
+
+</div>
+
+<footer>
+  <div class="footer-brand">AirLab <span>Pro</span> <span style="color:var(--white-dim);font-weight:400;font-size:0.8rem;">· by AirBalance Albania</span></div>
+  <div class="footer-links">
+    <a href="/">Kryefaqja</a>
+    <a href="/privacy">Privatësia</a>
+    <a href="/terms">Kushtet</a>
+    <a href="mailto:info@airbalance.al">Kontakt</a>
+  </div>
+  <div class="footer-copy">© 2026 AirBalance Albania</div>
+</footer>
+
+</body>
+</html>

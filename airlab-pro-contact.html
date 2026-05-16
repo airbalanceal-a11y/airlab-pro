@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kontakt — AirBalance Albania · AirLab Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#080f1e; --navy-2:#0d1628; --navy-3:#111d35; --navy-4:#162240;
+  --gold:#c8a84b; --gold-l:#e2c47a; --gold-dim:rgba(200,168,75,0.12);
+  --gold-b:rgba(200,168,75,0.22);
+  --white:#f0eeea; --w60:rgba(240,238,234,0.6); --w30:rgba(240,238,234,0.3); --w10:rgba(240,238,234,0.07);
+  --green:#3ecf8e; --red:#e05252; --r:10px; --r2:18px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--navy);color:var(--white);font-family:'Sora',sans-serif;line-height:1.7;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:64px;background:rgba(8,15,30,0.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--gold-b);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--navy);}
+.nav-logo-text{font-size:1rem;font-weight:700;color:var(--white);letter-spacing:-0.02em;}
+.nav-logo-text span{color:var(--gold);}
+.nav-links{display:flex;align-items:center;gap:26px;list-style:none;}
+.nav-links a{color:var(--w60);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--gold);}
+.nav-cta{display:flex;gap:10px;}
+.btn-ghost-nav{background:transparent;border:1px solid var(--gold-b);color:var(--w60);padding:8px 18px;border-radius:var(--r);font-family:'Sora',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.btn-ghost-nav:hover{border-color:var(--gold);color:var(--gold);}
+.btn-gold-nav{background:var(--gold);border:none;color:var(--navy);padding:8px 18px;border-radius:var(--r);font-family:'Sora',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.btn-gold-nav:hover{background:var(--gold-l);}
+
+/* HERO */
+.hero{padding:130px 5% 60px;text-align:center;position:relative;}
+.hero::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(200,168,75,0.1) 0%,transparent 65%);pointer-events:none;}
+.section-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:18px;}
+.section-label::before,.section-label::after{content:'';width:24px;height:1px;background:var(--gold);}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-0.04em;margin-bottom:16px;position:relative;z-index:1;}
+.hero h1 em{font-style:normal;color:var(--gold);}
+.hero-desc{font-size:0.95rem;color:var(--w60);max-width:520px;margin:0 auto 0;line-height:1.75;position:relative;z-index:1;}
+
+/* MAIN LAYOUT */
+.contact-wrap{
+  display:grid;grid-template-columns:1fr 400px;gap:40px;
+  padding:60px 5% 90px;align-items:start;
+}
+
+/* FORM CARD */
+.form-card{
+  background:var(--navy-2);border:1px solid var(--gold-b);
+  border-radius:var(--r2);overflow:hidden;
+}
+.form-card-header{
+  padding:26px 30px;border-bottom:1px solid var(--gold-b);
+  background:var(--navy-3);
+}
+.form-card-header h2{font-size:1.05rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;}
+.form-card-header p{font-size:0.8rem;color:var(--w60);}
+.form-body{padding:28px 30px;}
+
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--w60);margin-bottom:7px;}
+.form-input,.form-select,.form-textarea{
+  width:100%;background:var(--navy-3);border:1px solid var(--gold-b);
+  border-radius:var(--r);padding:11px 14px;
+  font-family:'Sora',sans-serif;font-size:0.875rem;color:var(--white);
+  outline:none;transition:all 0.2s;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--w30);}
+.form-select option{background:var(--navy-3);}
+.form-textarea{resize:vertical;min-height:130px;line-height:1.65;}
+.name-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* Subject chips */
+.subject-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.s-chip{
+  background:var(--navy-3);border:1px solid var(--gold-b);
+  border-radius:7px;padding:7px 14px;
+  font-family:'Sora',sans-serif;font-size:0.775rem;font-weight:600;
+  color:var(--w60);cursor:pointer;transition:all 0.18s;
+}
+.s-chip:hover{border-color:var(--gold);color:var(--gold);}
+.s-chip.selected{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+
+/* Submit */
+.submit-btn{
+  width:100%;background:var(--gold);border:none;color:var(--navy);
+  padding:13px;border-radius:var(--r);font-family:'Sora',sans-serif;
+  font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.22s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.submit-btn:hover{background:var(--gold-l);transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,168,75,0.25);}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-loader{width:16px;height:16px;border:2px solid var(--navy);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.form-note{font-size:0.72rem;color:var(--w30);text-align:center;margin-top:12px;}
+
+/* SUCCESS */
+.success-card{
+  display:none;padding:48px 30px;text-align:center;
+}
+.success-icon-wrap{
+  width:64px;height:64px;background:rgba(62,207,142,0.12);
+  border:2px solid var(--green);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin:0 auto 20px;
+}
+.success-card h3{font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:10px;}
+.success-card p{font-size:0.875rem;color:var(--w60);line-height:1.7;margin-bottom:24px;}
+.btn-ghost-sm{background:transparent;border:1px solid var(--gold-b);color:var(--w60);padding:10px 22px;border-radius:var(--r);font-family:'Sora',sans-serif;font-size:0.825rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-ghost-sm:hover{border-color:var(--gold);color:var(--gold);}
+
+/* RIGHT COLUMN */
+.right-col{display:flex;flex-direction:column;gap:18px;}
+
+/* Contact cards */
+.contact-card{
+  background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);
+  padding:26px;transition:border-color 0.2s;
+}
+.contact-card:hover{border-color:rgba(200,168,75,0.4);}
+.cc-icon{font-size:22px;margin-bottom:12px;display:block;}
+.cc-label{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.cc-title{font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.cc-desc{font-size:0.8rem;color:var(--w60);line-height:1.6;margin-bottom:12px;}
+.cc-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.825rem;font-weight:700;color:var(--gold);text-decoration:none;
+  transition:opacity 0.2s;
+}
+.cc-link:hover{opacity:0.75;}
+.cc-time{
+  display:inline-block;margin-top:10px;
+  background:var(--gold-dim);border:1px solid var(--gold-b);
+  border-radius:5px;padding:3px 10px;
+  font-size:0.68rem;font-weight:700;color:var(--w60);
+  font-family:'DM Mono',monospace;
+}
+
+/* Response time widget */
+.response-widget{
+  background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);
+  padding:22px 26px;
+}
+.rw-title{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.rw-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(240,238,234,0.04);}
+.rw-item:last-child{border-bottom:none;}
+.rw-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.rw-channel{font-size:0.8rem;font-weight:600;color:var(--white);flex:1;}
+.rw-time{font-size:0.72rem;font-family:'DM Mono',monospace;color:var(--w60);}
+
+/* Status */
+.status-widget{
+  background:rgba(62,207,142,0.06);border:1px solid rgba(62,207,142,0.2);
+  border-radius:var(--r2);padding:18px 22px;
+  display:flex;align-items:center;gap:14px;
+}
+.status-dot{
+  width:10px;height:10px;border-radius:50%;background:var(--green);
+  flex-shrink:0;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(62,207,142,0.5);}50%{box-shadow:0 0 0 6px rgba(62,207,142,0);}}
+.status-text h4{font-size:0.85rem;font-weight:700;color:var(--white);margin-bottom:2px;}
+.status-text p{font-size:0.75rem;color:var(--w60);}
+
+/* Map placeholder */
+.map-placeholder{
+  background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);
+  overflow:hidden;
+}
+.map-header{padding:16px 20px;border-bottom:1px solid var(--gold-b);display:flex;align-items:center;gap:10px;}
+.map-title{font-size:0.8rem;font-weight:700;}
+.map-body{
+  height:160px;background:var(--navy-3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+/* Grid lines for map effect */
+.map-body::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(200,168,75,0.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(200,168,75,0.06) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.map-pin{font-size:28px;position:relative;z-index:1;}
+.map-label{font-size:0.78rem;font-weight:600;color:var(--w60);position:relative;z-index:1;}
+
+/* FAQ mini */
+.faq-mini{background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);padding:22px 26px;}
+.faq-mini-title{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.faq-mini-item{padding:10px 0;border-bottom:1px solid rgba(240,238,234,0.04);}
+.faq-mini-item:last-child{border-bottom:none;}
+.faq-mini-q{font-size:0.82rem;font-weight:600;color:var(--white);margin-bottom:4px;}
+.faq-mini-a{font-size:0.775rem;color:var(--w60);line-height:1.6;}
+
+footer{border-top:1px solid var(--gold-b);padding:36px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.footer-brand{font-size:0.9rem;font-weight:700;}
+.footer-brand span{color:var(--gold);}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+.footer-links a{font-size:0.8rem;color:var(--w60);text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--gold);}
+.footer-copy{font-size:0.75rem;color:var(--w30);}
+
+.fade{opacity:0;transform:translateY(18px);transition:opacity 0.55s ease,transform 0.55s ease;}
+.fade.in{opacity:1;transform:none;}
+
+@media(max-width:960px){.contact-wrap{grid-template-columns:1fr;}.nav-links{display:none;}}
+@media(max-width:600px){.name-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <div class="nav-logo-icon">A</div>
+    <div class="nav-logo-text">AirLab <span>Pro</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Kryefaqja</a></li>
+    <li><a href="/about">Rreth Nesh</a></li>
+    <li><a href="/#pricing">Çmimet</a></li>
+    <li><a href="/contact" class="active">Kontakt</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a class="btn-ghost-nav" href="/login?mode=signin">Hyr</a>
+    <a class="btn-gold-nav" href="/login?mode=signup">Fillo falas</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="section-label">Kontakt</div>
+  <h1>Na shkruani —<br/>përgjigjemi <em>shpejt</em></h1>
+  <p class="hero-desc">Pyetje për platformën, çmime enterprise, konsulencë IAQ ose partneritet? Jemi këtu.</p>
+</section>
+
+<!-- MAIN -->
+<div class="contact-wrap">
+
+  <!-- FORM -->
+  <div class="form-card fade">
+    <!-- Form view -->
+    <div id="form-view">
+      <div class="form-card-header">
+        <h2>Dërgoni mesazh</h2>
+        <p>Zakonisht përgjigjemi brenda 24 orëve në ditët e punës</p>
+      </div>
+      <div class="form-body">
+        <div class="name-row">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Emri</label>
+            <input class="form-input" type="text" id="c-fname" placeholder="Ardit"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Mbiemri</label>
+            <input class="form-input" type="text" id="c-lname" placeholder="Balla"/>
+          </div>
+        </div>
+        <div style="margin-bottom:18px;"></div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="c-email" placeholder="emri@kompania.al"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kompania (opsionale)</label>
+          <input class="form-input" type="text" id="c-company" placeholder="Emri i firmës ose organizatës"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tema e mesazhit</label>
+          <div class="subject-chips" id="chips">
+            <div class="s-chip" onclick="selectChip(this)">💡 Demo & Provë falas</div>
+            <div class="s-chip selected" onclick="selectChip(this)">🏢 Plan Enterprise</div>
+            <div class="s-chip" onclick="selectChip(this)">🔬 Konsulencë IAQ</div>
+            <div class="s-chip" onclick="selectChip(this)">🤝 Partneritet</div>
+            <div class="s-chip" onclick="selectChip(this)">🛠 Support teknik</div>
+            <div class="s-chip" onclick="selectChip(this)">❓ Tjetër</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mesazhi</label>
+          <textarea class="form-textarea" id="c-msg" placeholder="Shkruani pyetjen ose kërkesën tuaj. Sa më shumë detaje të jepni, aq më mirë mund t'ju ndihmojmë..."></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom:22px;">
+          <label class="form-label">Si dëshironi të kontaktoheni?</label>
+          <select class="form-select" id="c-pref">
+            <option>Email (preferuar)</option>
+            <option>Telefon / WhatsApp</option>
+            <option>Video call (Google Meet / Zoom)</option>
+          </select>
+        </div>
+
+        <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+          <span id="submit-label">📨 Dërgo Mesazhin</span>
+          <div class="btn-loader" id="submit-loader"></div>
+        </button>
+        <div class="form-note">Të dhënat tuaja mbrohen sipas Politikës sonë të Privatësisë. Nuk dërgojmë spam.</div>
+      </div>
+    </div>
+
+    <!-- Success view -->
+    <div class="success-card" id="success-view">
+      <div class="success-icon-wrap">✓</div>
+      <h3>Mesazhi u dërgua!</h3>
+      <p>
+        Faleminderit për mesazhin tuaj. Ekipi i AirBalance Albania do t'ju kontaktojë
+        brenda <strong style="color:var(--gold-l);">24 orëve</strong> në ditët e punës.
+        <br/><br/>
+        Kontrolloni edhe dosjen Spam nëse nuk merrni përgjigje brenda kësaj kohe.
+      </p>
+      <button class="btn-ghost-sm" onclick="resetForm()">← Dërgo mesazh tjetër</button>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+
+    <!-- Status -->
+    <div class="status-widget fade">
+      <div class="status-dot"></div>
+      <div class="status-text">
+        <h4>Sistemi është online</h4>
+        <p>Uptime: 99.8% këtë muaj · Asnjë incident aktiv</p>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="contact-card fade">
+      <span class="cc-icon">📧</span>
+      <div class="cc-label">Email kryesor</div>
+      <div class="cc-title">info@airbalance.al</div>
+      <div class="cc-desc">Për të gjitha pyetjet — platformë, çmime, konsulencë dhe partneritet. Është mënyra më e shpejtë për të marrë përgjigje.</div>
+      <a class="cc-link" href="mailto:info@airbalance.al">Shkruaj email →</a>
+      <div><span class="cc-time">Përgjigje brenda 24h · E Hënë–E Premte</span></div>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="contact-card fade">
+      <span class="cc-icon">🏢</span>
+      <div class="cc-label">Enterprise & Partneritet</div>
+      <div class="cc-title">Diskutim personal</div>
+      <div class="cc-desc">Për plane Enterprise, white-label, integrimi API ose partneritet strategjik — organizojmë takim direkt me themeluesin.</div>
+      <a class="cc-link" href="mailto:info@airbalance.al?subject=[Enterprise]">Na kontaktoni →</a>
+      <div><span class="cc-time">Video call i mundshëm brenda 48h</span></div>
+    </div>
+
+    <!-- Response times -->
+    <div class="response-widget fade">
+      <div class="rw-title">Kohët e Përgjigjes</div>
+      <div class="rw-item">
+        <div class="rw-dot" style="background:var(--green);"></div>
+        <div class="rw-channel">Email · info@airbalance.al</div>
+        <div class="rw-time">≤ 24h</div>
+      </div>
+      <div class="rw-item">
+        <div class="rw-dot" style="background:var(--gold);"></div>
+        <div class="rw-channel">Formular kontakti</div>
+        <div class="rw-time">≤ 24h</div>
+      </div>
+      <div class="rw-item">
+        <div class="rw-dot" style="background:var(--gold);"></div>
+        <div class="rw-channel">Support teknik (Pro)</div>
+        <div class="rw-time">≤ 8h</div>
+      </div>
+      <div class="rw-item">
+        <div class="rw-dot" style="background:#4ea8e0;"></div>
+        <div class="rw-channel">Enterprise SLA</div>
+        <div class="rw-time">≤ 4h</div>
+      </div>
+    </div>
+
+    <!-- Location map -->
+    <div class="map-placeholder fade">
+      <div class="map-header">
+        <span style="font-size:14px;">📍</span>
+        <span class="map-title">Tiranë, Shqipëri</span>
+      </div>
+      <div class="map-body">
+        <div class="map-pin">📍</div>
+        <div class="map-label">AirBalance Albania · Tiranë</div>
+      </div>
+    </div>
+
+    <!-- Mini FAQ -->
+    <div class="faq-mini fade">
+      <div class="faq-mini-title">Pyetje të shpeshta</div>
+      <div class="faq-mini-item">
+        <div class="faq-mini-q">A ofrohet trial falas?</div>
+        <div class="faq-mini-a">Po — Plani Falas jep 5 raporte/muaj pa kartë krediti. Pro ka 14 ditë provë falas.</div>
+      </div>
+      <div class="faq-mini-item">
+        <div class="faq-mini-q">A mund të vizitoni on-site?</div>
+        <div class="faq-mini-a">Po, ofrojmë konsulencë IAQ fizike për biznese në Tiranë dhe rrethinë.</div>
+      </div>
+      <div class="faq-mini-item">
+        <div class="faq-mini-q">A ka API për integrim?</div>
+        <div class="faq-mini-a">API REST është i disponueshëm për Plan Enterprise. Kontaktoni për dokumentacion.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-brand">AirLab <span>Pro</span> · <span style="color:var(--w60);font-weight:400;">AirBalance Albania</span></div>
+    <div style="font-size:0.72rem;color:var(--w30);margin-top:4px;">info@airbalance.al · Tiranë, Shqipëri</div>
+  </div>
+  <div class="footer-links">
+    <a href="/">Kryefaqja</a>
+    <a href="/about">Rreth Nesh</a>
+    <a href="/privacy">Privatësia</a>
+    <a href="/terms">Kushtet</a>
+    <a href="/contact" style="color:var(--gold);">Kontakt</a>
+  </div>
+  <div class="footer-copy">© 2026 AirBalance Albania</div>
+</footer>
+
+<script>
+// Chips
+function selectChip(el){
+  document.querySelectorAll('.s-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// Submit
+function submitForm(){
+  const email=document.getElementById('c-email').value;
+  const msg=document.getElementById('c-msg').value;
+  if(!email||!msg){
+    const btn=document.getElementById('submit-btn');
+    btn.style.animation='shake 0.4s ease';
+    setTimeout(()=>btn.style.animation='',450);
+    return;
+  }
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;
+  document.getElementById('submit-loader').style.display='block';
+  document.getElementById('submit-label').style.display='none';
+  setTimeout(()=>{
+    document.getElementById('form-view').querySelector('.form-body').style.display='none';
+    document.getElementById('form-view').querySelector('.form-card-header').style.display='none';
+    document.getElementById('success-view').style.display='block';
+  },2000);
+}
+
+function resetForm(){
+  document.getElementById('success-view').style.display='none';
+  document.getElementById('form-view').querySelector('.form-body').style.display='block';
+  document.getElementById('form-view').querySelector('.form-card-header').style.display='block';
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=false;
+  document.getElementById('submit-loader').style.display='none';
+  document.getElementById('submit-label').style.display='inline';
+  document.getElementById('c-email').value='';
+  document.getElementById('c-msg').value='';
+}
+
+// Fade in
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:0.08});
+document.querySelectorAll('.fade').forEach(el=>obs.observe(el));
+
+// Shake
+const s=document.createElement('style');
+s.textContent='@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-3px);}80%{transform:translateX(3px);}}';
+document.head.appendChild(s);
+</script>
+</body>
+</html>

@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — AirLab Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#080f1e; --navy-2:#0b1525; --navy-3:#101e38;
+  --navy-4:#162240; --navy-5:#1c2d52;
+  --gold:#c8a84b; --gold-l:#e2c47a; --gold-dim:rgba(200,168,75,0.12);
+  --gold-b:rgba(200,168,75,0.22);
+  --white:#f0eeea; --w60:rgba(240,238,234,0.6); --w30:rgba(240,238,234,0.3); --w10:rgba(240,238,234,0.08);
+  --green:#3ecf8e; --red:#e05252; --yellow:#e0c052; --blue:#4ea8e0;
+  --sidebar:220px; --topbar:60px; --r:10px; --r2:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--navy);color:var(--white);font-family:'Sora',sans-serif;display:flex;font-size:14px;}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);height:100vh;
+  background:var(--navy-2);border-right:1px solid var(--gold-b);
+  display:flex;flex-direction:column;z-index:10;
+  overflow:hidden;
+}
+.sb-logo{
+  height:var(--topbar);display:flex;align-items:center;gap:10px;
+  padding:0 18px;border-bottom:1px solid var(--gold-b);flex-shrink:0;
+}
+.sb-logo-icon{
+  width:30px;height:30px;background:var(--gold);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:var(--navy);flex-shrink:0;
+}
+.sb-logo-text{font-size:0.9rem;font-weight:700;letter-spacing:-0.02em;}
+.sb-logo-text span{color:var(--gold);}
+
+.sb-section{padding:20px 12px 8px;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--w30);}
+.sb-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.sb-nav::-webkit-scrollbar{width:3px;}
+.sb-nav::-webkit-scrollbar-thumb{background:var(--gold-b);}
+
+.sb-item{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 16px;margin:2px 8px;border-radius:8px;
+  cursor:pointer;transition:all 0.18s;color:var(--w60);
+  font-size:0.825rem;font-weight:500;
+  border:1px solid transparent;user-select:none;
+}
+.sb-item:hover{background:var(--w10);color:var(--white);}
+.sb-item.active{background:var(--gold-dim);border-color:var(--gold-b);color:var(--gold);}
+.sb-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.sb-badge{
+  margin-left:auto;background:var(--gold);color:var(--navy);
+  font-size:0.62rem;font-weight:800;padding:2px 6px;border-radius:100px;
+}
+
+.sb-bottom{border-top:1px solid var(--gold-b);padding:14px 8px;}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.18s;}
+.sb-user:hover{background:var(--w10);}
+.sb-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--gold-dim);border:2px solid var(--gold-b);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:700;color:var(--gold);flex-shrink:0;
+}
+.sb-uname{font-size:0.8rem;font-weight:600;color:var(--white);}
+.sb-urole{font-size:0.7rem;color:var(--w60);}
+
+/* ─── MAIN ─── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+.topbar{
+  height:var(--topbar);display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;border-bottom:1px solid var(--gold-b);
+  background:var(--navy-2);flex-shrink:0;
+}
+.topbar-title{font-size:1rem;font-weight:700;letter-spacing:-0.02em;}
+.topbar-title span{color:var(--w60);font-weight:400;font-size:0.85rem;margin-left:8px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.tb-btn{
+  background:var(--gold);color:var(--navy);border:none;
+  padding:7px 16px;border-radius:8px;font-family:'Sora',sans-serif;
+  font-size:0.78rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:all 0.18s;
+}
+.tb-btn:hover{background:var(--gold-l);transform:translateY(-1px);}
+.tb-icon-btn{
+  width:34px;height:34px;background:var(--w10);border:1px solid var(--gold-b);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;transition:all 0.18s;color:var(--w60);
+}
+.tb-icon-btn:hover{background:var(--gold-dim);color:var(--gold);}
+
+.content{flex:1;overflow-y:auto;padding:28px;background:var(--navy);}
+.content::-webkit-scrollbar{width:4px;}
+.content::-webkit-scrollbar-thumb{background:var(--gold-b);border-radius:4px;}
+
+/* ─── VIEW ─── */
+.view{display:none;animation:fadeIn 0.25s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ─── STAT CARDS ─── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{
+  background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);
+  padding:20px 22px;position:relative;overflow:hidden;transition:border-color 0.2s;
+}
+.stat-card:hover{border-color:rgba(200,168,75,0.45);}
+.stat-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0.4;
+}
+.stat-label{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--w60);margin-bottom:10px;}
+.stat-val{font-size:1.9rem;font-weight:800;letter-spacing:-0.04em;color:var(--white);line-height:1;font-family:'DM Mono',monospace;}
+.stat-sub{font-size:0.72rem;color:var(--w60);margin-top:6px;display:flex;align-items:center;gap:5px;}
+.stat-delta{font-size:0.7rem;font-weight:700;padding:2px 6px;border-radius:4px;}
+.delta-up{background:rgba(62,207,142,0.15);color:var(--green);}
+.delta-down{background:rgba(224,82,82,0.15);color:var(--red);}
+
+/* ─── GRID LAYOUT ─── */
+.dash-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
+.dash-left{display:flex;flex-direction:column;gap:20px;}
+.dash-right{display:flex;flex-direction:column;gap:20px;}
+
+/* ─── CARD ─── */
+.card{background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);overflow:hidden;}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--gold-b);
+}
+.card-title{font-size:0.875rem;font-weight:700;letter-spacing:-0.01em;}
+.card-action{font-size:0.75rem;color:var(--gold);cursor:pointer;font-weight:600;transition:opacity 0.2s;}
+.card-action:hover{opacity:0.7;}
+.card-body{padding:20px 22px;}
+
+/* ─── CHART ─── */
+.chart-wrap{position:relative;height:160px;margin-bottom:10px;}
+svg.chart{width:100%;height:100%;}
+.chart-labels{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--w30);font-family:'DM Mono',monospace;margin-top:6px;}
+.chart-legend{display:flex;gap:16px;margin-top:12px;}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:0.72rem;color:var(--w60);}
+.leg-dot{width:8px;height:8px;border-radius:50%;}
+
+/* ─── REPORTS TABLE ─── */
+.reports-table{width:100%;border-collapse:collapse;}
+.reports-table th{
+  font-size:0.65rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--w30);padding:10px 14px;text-align:left;
+  border-bottom:1px solid var(--gold-b);
+}
+.reports-table td{padding:13px 14px;border-bottom:1px solid rgba(240,238,234,0.04);vertical-align:middle;}
+.reports-table tr:last-child td{border-bottom:none;}
+.reports-table tr:hover td{background:var(--w10);cursor:pointer;}
+.report-name{font-size:0.825rem;font-weight:600;color:var(--white);margin-bottom:2px;}
+.report-client{font-size:0.72rem;color:var(--w60);}
+.report-date{font-size:0.75rem;color:var(--w60);font-family:'DM Mono',monospace;}
+.score-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:44px;height:24px;border-radius:6px;
+  font-size:0.75rem;font-weight:800;font-family:'DM Mono',monospace;
+}
+.score-ex{background:rgba(62,207,142,0.15);color:var(--green);border:1px solid rgba(62,207,142,0.3);}
+.score-good{background:rgba(78,168,224,0.15);color:var(--blue);border:1px solid rgba(78,168,224,0.3);}
+.score-ok{background:rgba(224,192,82,0.15);color:var(--yellow);border:1px solid rgba(224,192,82,0.3);}
+.score-bad{background:rgba(224,82,82,0.15);color:var(--red);border:1px solid rgba(224,82,82,0.3);}
+.status-chip{font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:0.04em;}
+.chip-done{background:rgba(62,207,142,0.12);color:var(--green);}
+.chip-draft{background:rgba(240,238,234,0.08);color:var(--w60);}
+.chip-sent{background:rgba(78,168,224,0.12);color:var(--blue);}
+
+.action-icon{width:28px;height:28px;border-radius:6px;background:var(--w10);border:1px solid var(--gold-b);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all 0.18s;margin-left:4px;}
+.action-icon:hover{background:var(--gold-dim);color:var(--gold);}
+
+/* ─── CLIENTS LIST ─── */
+.client-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(240,238,234,0.04);}
+.client-item:last-child{border-bottom:none;}
+.client-av{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:var(--gold-dim);border:1px solid var(--gold-b);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;color:var(--gold);
+}
+.client-name{font-size:0.825rem;font-weight:600;color:var(--white);}
+.client-type{font-size:0.7rem;color:var(--w60);}
+.client-score-wrap{margin-left:auto;text-align:right;}
+.client-score-num{font-size:1rem;font-weight:800;font-family:'DM Mono',monospace;}
+.client-score-label{font-size:0.6rem;color:var(--w60);text-transform:uppercase;letter-spacing:0.05em;}
+
+/* ─── QUICK ACTIONS ─── */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.qa-btn{
+  background:var(--navy-3);border:1px solid var(--gold-b);border-radius:var(--r);
+  padding:14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+  cursor:pointer;transition:all 0.18s;text-align:left;
+}
+.qa-btn:hover{background:var(--gold-dim);border-color:rgba(200,168,75,0.45);transform:translateY(-1px);}
+.qa-icon{font-size:18px;}
+.qa-label{font-size:0.78rem;font-weight:700;color:var(--white);}
+.qa-desc{font-size:0.68rem;color:var(--w60);}
+
+/* ─── PARAMS MINI ─── */
+.param-mini{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(240,238,234,0.04);}
+.param-mini:last-child{border-bottom:none;}
+.pm-name{font-size:0.75rem;color:var(--w60);font-family:'DM Mono',monospace;width:70px;flex-shrink:0;}
+.pm-bar{flex:1;height:5px;background:var(--w10);border-radius:3px;overflow:hidden;}
+.pm-fill{height:100%;border-radius:3px;}
+.pm-val{font-size:0.72rem;font-weight:700;color:var(--white);font-family:'DM Mono',monospace;width:64px;text-align:right;flex-shrink:0;}
+.pm-s{font-size:0.65rem;font-weight:700;width:36px;text-align:right;flex-shrink:0;}
+
+/* ─── REPORTS FULL VIEW ─── */
+.view-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.view-header h2{font-size:1.1rem;font-weight:700;letter-spacing:-0.03em;}
+.filter-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.filter-btn{
+  background:var(--navy-2);border:1px solid var(--gold-b);color:var(--w60);
+  padding:6px 14px;border-radius:7px;font-family:'Sora',sans-serif;
+  font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.18s;
+}
+.filter-btn:hover,.filter-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.search-bar{
+  display:flex;align-items:center;gap:10px;
+  background:var(--navy-2);border:1px solid var(--gold-b);border-radius:9px;
+  padding:8px 16px;margin-bottom:18px;
+}
+.search-bar input{
+  background:none;border:none;outline:none;color:var(--white);
+  font-family:'Sora',sans-serif;font-size:0.85rem;flex:1;
+}
+.search-bar input::placeholder{color:var(--w30);}
+
+/* ─── CLIENTS FULL VIEW ─── */
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.client-card{
+  background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);
+  padding:22px;transition:border-color 0.2s,transform 0.2s;cursor:pointer;
+}
+.client-card:hover{border-color:rgba(200,168,75,0.5);transform:translateY(-2px);}
+.cc-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.cc-avatar{
+  width:46px;height:46px;border-radius:12px;
+  background:var(--gold-dim);border:2px solid var(--gold-b);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;font-weight:700;color:var(--gold);flex-shrink:0;
+}
+.cc-name{font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:3px;}
+.cc-type{font-size:0.72rem;color:var(--w60);}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:6px;}
+.cc-stat-label{font-size:0.62rem;color:var(--w60);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+.cc-stat-val{font-size:1rem;font-weight:800;font-family:'DM Mono',monospace;}
+
+/* ─── MODAL ─── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(8,15,30,0.85);
+  backdrop-filter:blur(8px);z-index:1000;
+  display:none;align-items:center;justify-content:center;
+  animation:fadeIn 0.2s ease;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--navy-2);border:1px solid var(--gold-b);border-radius:var(--r2);
+  width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;
+  animation:slideUp 0.25s ease;
+}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 26px;border-bottom:1px solid var(--gold-b);
+}
+.modal-title{font-size:1rem;font-weight:700;letter-spacing:-0.02em;}
+.modal-close{
+  width:30px;height:30px;background:var(--w10);border:1px solid var(--gold-b);
+  border-radius:7px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;color:var(--w60);transition:all 0.18s;
+}
+.modal-close:hover{background:var(--gold-dim);color:var(--gold);}
+.modal-body{padding:26px;}
+.form-group{margin-bottom:18px;}
+.form-label{font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--w60);margin-bottom:8px;display:block;}
+.form-input,.form-select{
+  width:100%;background:var(--navy-3);border:1px solid var(--gold-b);
+  border-radius:var(--r);padding:10px 14px;
+  font-family:'Sora',sans-serif;font-size:0.875rem;color:var(--white);
+  outline:none;transition:border-color 0.18s;
+}
+.form-input:focus,.form-select:focus{border-color:var(--gold);}
+.form-input::placeholder{color:var(--w30);}
+.form-select option{background:var(--navy-3);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-note{font-size:0.75rem;color:var(--w60);margin-top:6px;}
+.param-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.modal-footer{
+  display:flex;align-items:center;justify-content:flex-end;gap:10px;
+  padding:18px 26px;border-top:1px solid var(--gold-b);
+}
+.btn-cancel{
+  background:transparent;border:1px solid var(--gold-b);color:var(--w60);
+  padding:9px 20px;border-radius:var(--r);font-family:'Sora',sans-serif;
+  font-size:0.825rem;font-weight:600;cursor:pointer;transition:all 0.18s;
+}
+.btn-cancel:hover{border-color:var(--gold);color:var(--gold);}
+.btn-submit{
+  background:var(--gold);color:var(--navy);border:none;
+  padding:9px 22px;border-radius:var(--r);font-family:'Sora',sans-serif;
+  font-size:0.825rem;font-weight:700;cursor:pointer;transition:all 0.18s;
+}
+.btn-submit:hover{background:var(--gold-l);}
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;bottom:28px;right:28px;z-index:2000;
+  background:var(--navy-3);border:1px solid var(--green);border-radius:var(--r);
+  padding:14px 20px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  transform:translateY(80px);opacity:0;transition:all 0.3s ease;pointer-events:none;
+}
+.toast.show{transform:none;opacity:1;}
+.toast-icon{font-size:18px;}
+.toast-text{font-size:0.875rem;font-weight:600;}
+
+/* ─── SCORE DETAIL PANEL ─── */
+.detail-panel{
+  position:fixed;right:0;top:0;bottom:0;width:400px;
+  background:var(--navy-2);border-left:1px solid var(--gold-b);
+  z-index:500;transform:translateX(100%);transition:transform 0.3s ease;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.detail-panel.open{transform:none;}
+.dp-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 22px;border-bottom:1px solid var(--gold-b);flex-shrink:0;
+}
+.dp-title{font-size:0.9rem;font-weight:700;}
+.dp-body{flex:1;overflow-y:auto;padding:22px;}
+.dp-score-big{
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px;background:var(--navy-3);border-radius:var(--r2);
+  border:1px solid var(--gold-b);margin-bottom:20px;
+}
+.dp-score-num{font-size:3.5rem;font-weight:800;font-family:'DM Mono',monospace;letter-spacing:-0.04em;}
+.dp-score-label{font-size:0.72rem;color:var(--w60);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;}
+.dp-verdict{font-size:1rem;font-weight:700;margin-top:10px;}
+.dp-section-title{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--w60);margin:18px 0 10px;}
+.dp-param{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(240,238,234,0.04);}
+.dp-param:last-child{border-bottom:none;}
+.dp-param-name{font-size:0.78rem;color:var(--w60);font-family:'DM Mono',monospace;width:80px;flex-shrink:0;}
+.dp-bar{flex:1;height:6px;background:var(--w10);border-radius:3px;overflow:hidden;}
+.dp-fill{height:100%;border-radius:3px;}
+.dp-param-val{font-size:0.8rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--white);width:80px;text-align:right;}
+.dp-status{font-size:0.65rem;font-weight:700;width:40px;text-align:right;}
+.dp-ai{background:var(--navy-3);border:1px solid var(--gold-b);border-radius:var(--r);padding:14px 16px;margin-top:14px;}
+.dp-ai-label{font-size:0.65rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.dp-ai-text{font-size:0.8rem;color:var(--w60);line-height:1.65;}
+.dp-footer{padding:16px 22px;border-top:1px solid var(--gold-b);display:flex;gap:10px;flex-shrink:0;}
+.dp-btn{
+  flex:1;padding:10px;border-radius:var(--r);font-family:'Sora',sans-serif;
+  font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.18s;text-align:center;border:none;
+}
+.dp-btn-gold{background:var(--gold);color:var(--navy);}
+.dp-btn-gold:hover{background:var(--gold-l);}
+.dp-btn-ghost{background:var(--w10);color:var(--w60);border:1px solid var(--gold-b) !important;}
+.dp-btn-ghost:hover{border-color:var(--gold) !important;color:var(--gold);}
+
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">A</div>
+    <div class="sb-logo-text">AirLab <span>Pro</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Kryesore</div>
+    <div class="sb-item active" data-view="dashboard">
+      <span class="sb-icon">◈</span> Dashboard
+    </div>
+    <div class="sb-item" data-view="reports">
+      <span class="sb-icon">📋</span> Raporte
+      <span class="sb-badge">12</span>
+    </div>
+    <div class="sb-item" data-view="clients">
+      <span class="sb-icon">👥</span> Klientët
+    </div>
+    <div class="sb-section">Mjete</div>
+    <div class="sb-item" data-view="import">
+      <span class="sb-icon">📥</span> Importo Excel
+    </div>
+    <div class="sb-item" data-view="score">
+      <span class="sb-icon">⚙️</span> Score Engine
+    </div>
+    <div class="sb-section">Llogaria</div>
+    <div class="sb-item" data-view="settings">
+      <span class="sb-icon">⚙</span> Cilësimet
+    </div>
+    <div class="sb-item" style="color:var(--w30);">
+      <span class="sb-icon">🔔</span> Njoftimet
+    </div>
+  </nav>
+  <div class="sb-bottom">
+    <div style="background:var(--gold-dim);border:1px solid var(--gold-b);border-radius:9px;padding:12px 14px;margin-bottom:10px;">
+      <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Plan Falas</div>
+      <div style="font-size:0.72rem;color:var(--w60);margin-bottom:8px;">3 / 5 raporte të muajit</div>
+      <div style="height:4px;background:var(--w10);border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:60%;background:var(--gold);border-radius:2px;"></div>
+      </div>
+      <div style="font-size:0.68rem;color:var(--gold);margin-top:8px;cursor:pointer;font-weight:600;">↑ Kaloje në Pro</div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar">BL</div>
+      <div>
+        <div class="sb-uname">Bledi L.</div>
+        <div class="sb-urole">AirBalance Albania</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard <span>/ Kryefaqja</span></div>
+    <div class="topbar-right">
+      <div class="tb-icon-btn" title="Kërko">🔍</div>
+      <div class="tb-icon-btn" title="Njoftimet">🔔</div>
+      <button class="tb-btn" onclick="openModal()">+ Raport i Ri</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD VIEW ═══ -->
+    <div class="view active" id="view-dashboard">
+
+      <!-- Welcome -->
+      <div style="margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:1.15rem;font-weight:800;letter-spacing:-0.03em;">Mirëmëngjes, Bledi 👋</div>
+          <div style="font-size:0.8rem;color:var(--w60);margin-top:3px;">E Shtunë, 9 Maj 2026 · 3 raporte të lira ky muaj</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Raporte Total</div>
+          <div class="stat-val">38</div>
+          <div class="stat-sub"><span class="stat-delta delta-up">+6</span> këtë muaj</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Klientë Aktivë</div>
+          <div class="stat-val">14</div>
+          <div class="stat-sub"><span class="stat-delta delta-up">+2</span> muajin e kaluar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Score Mesatar</div>
+          <div class="stat-val" style="color:var(--gold);">74</div>
+          <div class="stat-sub"><span class="stat-delta delta-up">+3.2</span> vs muaji parë</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">PDF të Dërguar</div>
+          <div class="stat-val">22</div>
+          <div class="stat-sub"><span class="stat-delta delta-up">+8</span> këtë muaj</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-left">
+
+          <!-- Score Trend Chart -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Trendi i IAQ Score — 6 muajt e fundit</div>
+              <div class="card-action">Shiko historikun →</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                <svg class="chart" viewBox="0 0 600 160" preserveAspectRatio="none">
+                  <!-- Grid lines -->
+                  <line x1="0" y1="32" x2="600" y2="32" stroke="rgba(240,238,234,0.06)" stroke-width="1"/>
+                  <line x1="0" y1="64" x2="600" y2="64" stroke="rgba(240,238,234,0.06)" stroke-width="1"/>
+                  <line x1="0" y1="96" x2="600" y2="96" stroke="rgba(240,238,234,0.06)" stroke-width="1"/>
+                  <line x1="0" y1="128" x2="600" y2="128" stroke="rgba(240,238,234,0.06)" stroke-width="1"/>
+                  <!-- Area fill gold -->
+                  <path d="M0,108 C60,102 120,90 180,85 C240,80 300,72 360,68 C420,64 480,58 600,52 L600,160 L0,160Z"
+                    fill="url(#goldGrad)" opacity="0.3"/>
+                  <!-- Line gold -->
+                  <path d="M0,108 C60,102 120,90 180,85 C240,80 300,72 360,68 C420,64 480,58 600,52"
+                    fill="none" stroke="#c8a84b" stroke-width="2.5" stroke-linecap="round"/>
+                  <!-- Dots -->
+                  <circle cx="0" cy="108" r="4" fill="#c8a84b"/>
+                  <circle cx="120" cy="90" r="4" fill="#c8a84b"/>
+                  <circle cx="240" cy="80" r="4" fill="#c8a84b"/>
+                  <circle cx="360" cy="68" r="4" fill="#c8a84b"/>
+                  <circle cx="480" cy="58" r="4" fill="#c8a84b"/>
+                  <circle cx="600" cy="52" r="5" fill="#c8a84b" stroke="#e2c47a" stroke-width="2"/>
+                  <!-- Area fill green -->
+                  <path d="M0,128 C60,122 120,118 180,112 C240,106 300,100 360,94 C420,88 480,80 600,75 L600,160 L0,160Z"
+                    fill="url(#greenGrad)" opacity="0.15"/>
+                  <path d="M0,128 C60,122 120,118 180,112 C240,106 300,100 360,94 C420,88 480,80 600,75"
+                    fill="none" stroke="#3ecf8e" stroke-width="1.5" stroke-dasharray="5,4" stroke-linecap="round" opacity="0.6"/>
+                  <!-- Labels -->
+                  <text x="0" y="148" fill="rgba(240,238,234,0.3)" font-size="10" font-family="DM Mono">62</text>
+                  <text x="114" y="86" fill="rgba(240,238,234,0.3)" font-size="10" font-family="DM Mono">68</text>
+                  <text x="234" y="76" fill="rgba(240,238,234,0.3)" font-size="10" font-family="DM Mono">70</text>
+                  <text x="354" y="64" fill="rgba(240,238,234,0.3)" font-size="10" font-family="DM Mono">73</text>
+                  <text x="474" y="54" fill="rgba(240,238,234,0.3)" font-size="10" font-family="DM Mono">76</text>
+                  <text x="566" y="48" fill="#c8a84b" font-size="11" font-family="DM Mono" font-weight="700">78</text>
+                  <defs>
+                    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#c8a84b"/>
+                      <stop offset="100%" stop-color="#c8a84b" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#3ecf8e"/>
+                      <stop offset="100%" stop-color="#3ecf8e" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="chart-labels">
+                <span>Dhjetor</span><span>Janar</span><span>Shkurt</span><span>Mars</span><span>Prill</span><span>Maj</span>
+              </div>
+              <div class="chart-legend">
+                <div class="leg-item"><div class="leg-dot" style="background:var(--gold);"></div> Score IAQ Mesatar</div>
+                <div class="leg-item"><div class="leg-dot" style="background:var(--green);opacity:0.6;"></div> Trendi Klientëve</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Reports -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Raportet e Fundit</div>
+              <div class="card-action" onclick="switchView('reports')">Shiko të gjitha →</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="reports-table">
+                <thead>
+                  <tr>
+                    <th>Hapësira / Klienti</th>
+                    <th>Score</th>
+                    <th>Data</th>
+                    <th>Statusi</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="recent-reports-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-right">
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Veprime të Shpejta</div></div>
+            <div class="card-body">
+              <div class="quick-actions">
+                <div class="qa-btn" onclick="openModal()">
+                  <div class="qa-icon">📝</div>
+                  <div class="qa-label">Raport i Ri</div>
+                  <div class="qa-desc">Shto matje manuale</div>
+                </div>
+                <div class="qa-btn" onclick="switchView('import')">
+                  <div class="qa-icon">📥</div>
+                  <div class="qa-label">Importo Excel</div>
+                  <div class="qa-desc">Nga sensor .xlsx</div>
+                </div>
+                <div class="qa-btn">
+                  <div class="qa-icon">📧</div>
+                  <div class="qa-label">Dërgo PDF</div>
+                  <div class="qa-desc">Email klientit</div>
+                </div>
+                <div class="qa-btn" onclick="switchView('clients')">
+                  <div class="qa-icon">👤</div>
+                  <div class="qa-label">Klient i Ri</div>
+                  <div class="qa-desc">Shto në portofol</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Clients -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Klientët Aktivë</div>
+              <div class="card-action" onclick="switchView('clients')">Të gjithë →</div>
+            </div>
+            <div class="card-body" id="top-clients"></div>
+          </div>
+
+          <!-- Avg Parameters -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Parametrat Mesatarë</div>
+              <div style="font-size:0.7rem;color:var(--w60);">Ky muaj</div>
+            </div>
+            <div class="card-body">
+              <div class="param-mini">
+                <span class="pm-name">CO₂</span>
+                <div class="pm-bar"><div class="pm-fill" style="width:68%;background:var(--green);"></div></div>
+                <span class="pm-val">856 ppm</span>
+                <span class="pm-s" style="color:var(--green);">✓</span>
+              </div>
+              <div class="param-mini">
+                <span class="pm-name">PM2.5</span>
+                <div class="pm-bar"><div class="pm-fill" style="width:58%;background:var(--yellow);"></div></div>
+                <span class="pm-val">21 µg/m³</span>
+                <span class="pm-s" style="color:var(--yellow);">⚠</span>
+              </div>
+              <div class="param-mini">
+                <span class="pm-name">TVOC</span>
+                <div class="pm-bar"><div class="pm-fill" style="width:32%;background:var(--green);"></div></div>
+                <span class="pm-val">0.28 mg/m³</span>
+                <span class="pm-s" style="color:var(--green);">✓</span>
+              </div>
+              <div class="param-mini">
+                <span class="pm-name">RH</span>
+                <div class="pm-bar"><div class="pm-fill" style="width:78%;background:var(--green);"></div></div>
+                <span class="pm-val">51 %</span>
+                <span class="pm-s" style="color:var(--green);">✓</span>
+              </div>
+              <div class="param-mini">
+                <span class="pm-name">Temp</span>
+                <div class="pm-bar"><div class="pm-fill" style="width:82%;background:var(--green);"></div></div>
+                <span class="pm-val">22.1 °C</span>
+                <span class="pm-s" style="color:var(--green);">✓</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ REPORTS VIEW ═══ -->
+    <div class="view" id="view-reports">
+      <div class="view-header">
+        <h2>Të gjitha Raportet</h2>
+        <button class="tb-btn" onclick="openModal()">+ Raport i Ri</button>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active">Të gjitha (38)</button>
+        <button class="filter-btn">Këtë muaj (6)</button>
+        <button class="filter-btn">Dërguar (22)</button>
+        <button class="filter-btn">Draft (8)</button>
+        <button class="filter-btn">Score &lt; 60 (4)</button>
+      </div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Kërko sipas emrit, klientit ose adresës..."/>
+      </div>
+      <div class="card">
+        <table class="reports-table">
+          <thead>
+            <tr>
+              <th>Hapësira / Klienti</th>
+              <th>Score</th>
+              <th>CO₂</th>
+              <th>PM2.5</th>
+              <th>Data</th>
+              <th>Statusi</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="all-reports-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ CLIENTS VIEW ═══ -->
+    <div class="view" id="view-clients">
+      <div class="view-header">
+        <h2>Portofoli i Klientëve</h2>
+        <button class="tb-btn">+ Klient i Ri</button>
+      </div>
+      <div class="clients-grid" id="clients-grid"></div>
+    </div>
+
+    <!-- ═══ IMPORT VIEW ═══ -->
+    <div class="view" id="view-import">
+      <div class="view-header"><h2>Importo nga Excel / Sensor</h2></div>
+      <div class="card" style="max-width:600px;">
+        <div class="card-header"><div class="card-title">Ngarko skedarin .xlsx</div></div>
+        <div class="card-body">
+          <div style="border:2px dashed var(--gold-b);border-radius:var(--r2);padding:48px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gold-b)'">
+            <div style="font-size:2.5rem;margin-bottom:14px;">📥</div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:6px;">Tërhiq skedarin këtu ose klikoni</div>
+            <div style="font-size:0.78rem;color:var(--w60);">Mbështet: .xlsx, .xls, .csv · Max 10MB</div>
+            <div style="margin-top:18px;">
+              <button class="tb-btn" style="margin:0 auto;">Zgjidh Skedarin</button>
+            </div>
+          </div>
+          <div style="margin-top:24px;">
+            <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--w60);margin-bottom:12px;">Kolonat e nevojshme në Excel:</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+              <div style="background:var(--navy-3);border:1px solid var(--gold-b);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);">timestamp</div>
+              <div style="background:var(--navy-3);border:1px solid var(--gold-b);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);">co2_ppm</div>
+              <div style="background:var(--navy-3);border:1px solid var(--gold-b);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);">pm25_ugm3</div>
+              <div style="background:var(--navy-3);border:1px solid var(--gold-b);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);">tvoc_mgm3</div>
+              <div style="background:var(--navy-3);border:1px solid var(--gold-b);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);">humidity_rh</div>
+              <div style="background:var(--navy-3);border:1px solid var(--gold-b);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--gold);">temp_c</div>
+            </div>
+            <div style="margin-top:14px;">
+              <span style="font-size:0.75rem;color:var(--gold);cursor:pointer;font-weight:600;">⬇ Shkarko template Excel falas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SCORE ENGINE VIEW ═══ -->
+    <div class="view" id="view-score">
+      <div class="view-header"><h2>Score Engine — Llogaritje Manuale</h2></div>
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;max-width:900px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Fut Parametrat</div></div>
+          <div class="card-body">
+            <div class="form-row" style="margin-bottom:16px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">CO₂ (ppm)</label>
+                <input class="form-input" type="number" id="sc-co2" value="842" oninput="calcScore()"/>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">PM2.5 (µg/m³)</label>
+                <input class="form-input" type="number" id="sc-pm" value="18" oninput="calcScore()"/>
+              </div>
+            </div>
+            <div class="form-row" style="margin-bottom:16px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">TVOC (mg/m³)</label>
+                <input class="form-input" type="number" id="sc-tvoc" value="0.24" step="0.01" oninput="calcScore()"/>
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Lagështia (%RH)</label>
+                <input class="form-input" type="number" id="sc-rh" value="52" oninput="calcScore()"/>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Temperatura (°C)</label>
+              <input class="form-input" type="number" id="sc-temp" value="22.4" step="0.1" oninput="calcScore()"/>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Rezultati Live</div></div>
+          <div class="card-body" style="text-align:center;">
+            <div id="live-score-num" style="font-size:4rem;font-weight:800;font-family:'DM Mono',monospace;letter-spacing:-0.04em;color:var(--gold);">78</div>
+            <div id="live-score-grade" style="font-size:1.1rem;font-weight:700;color:var(--green);margin-bottom:16px;">MIRË</div>
+            <div id="live-score-note" style="font-size:0.78rem;color:var(--w60);line-height:1.6;">Ajri është në parametra të pranueshëm. Rekomandohet HRV për ventilim të rregullt.</div>
+            <button class="tb-btn" style="margin-top:20px;width:100%;justify-content:center;" onclick="openModal()">Gjenero Raport ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SETTINGS VIEW ═══ -->
+    <div class="view" id="view-settings">
+      <div class="view-header"><h2>Cilësimet e Llogarisë</h2></div>
+      <div style="max-width:600px;display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Profili & Kompania</div></div>
+          <div class="card-body">
+            <div class="form-row" style="margin-bottom:14px;">
+              <div class="form-group" style="margin:0;"><label class="form-label">Emri i Plotë</label><input class="form-input" value="Bledi L."/></div>
+              <div class="form-group" style="margin:0;"><label class="form-label">Email</label><input class="form-input" value="info@airbalance.al"/></div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px;"><label class="form-label">Kompania</label><input class="form-input" value="AirBalance Albania"/></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Telefoni</label><input class="form-input" placeholder="+355..."/></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Branding i PDF</div></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:16px;padding:14px;background:var(--navy-3);border:1px solid var(--gold-b);border-radius:var(--r);margin-bottom:14px;">
+              <div style="width:48px;height:48px;background:var(--gold-dim);border:2px dashed var(--gold-b);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;">+</div>
+              <div><div style="font-size:0.825rem;font-weight:600;">Ngarko Logon</div><div style="font-size:0.72rem;color:var(--w60);">PNG, SVG · Max 2MB · Rekomandohet e bardhe</div></div>
+            </div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Nënshkrimi në PDF</label><input class="form-input" placeholder="Inxh. Bledi L. · AirBalance Albania · +355..."/></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button class="tb-btn" onclick="showToast('Cilësimet u ruajtën me sukses ✓')">Ruaj Ndryshimet</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ─── MODAL: New Report ─── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📝 Raport i Ri IAQ</div>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Klienti</label>
+          <select class="form-select">
+            <option>Hapi Group SH.P.K.</option>
+            <option>Rezidenca Panorama</option>
+            <option>Kinema Millennium</option>
+            <option>Bashkia Tiranë</option>
+            <option>+ Klient i Ri...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lloji i Hapësirës</label>
+          <select class="form-select">
+            <option>Zyrë</option>
+            <option>Rezidencë</option>
+            <option>Shkollë / Çerdhe</option>
+            <option>Spital / Klinikë</option>
+            <option>Hotel</option>
+            <option>Dyqan / Retail</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emri i Hapësirës</label>
+        <input class="form-input" placeholder="p.sh. Zyrë 3A, Salla e Mbledhjeve, Apartamenti 4B"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Adresa</label>
+        <input class="form-input" placeholder="Rruga, Qyteti"/>
+      </div>
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--w60);margin:6px 0 12px;">Parametrat e Matjes</div>
+      <div class="param-inputs">
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">CO₂ (ppm)</label>
+          <input class="form-input" type="number" placeholder="800"/>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">PM2.5 (µg/m³)</label>
+          <input class="form-input" type="number" placeholder="15"/>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">TVOC (mg/m³)</label>
+          <input class="form-input" type="number" placeholder="0.2" step="0.01"/>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">Lagështia (%RH)</label>
+          <input class="form-input" type="number" placeholder="50"/>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">Temperatura (°C)</label>
+          <input class="form-input" type="number" placeholder="22" step="0.1"/>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">Data e Matjes</label>
+          <input class="form-input" type="date" id="report-date"/>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Shënime (opsionale)</label>
+        <input class="form-input" placeholder="Kushte specifike, burime të mundshme ndotjeje..."/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Anulo</button>
+      <button class="btn-cancel" style="color:var(--blue);border-color:rgba(78,168,224,0.3);">Ruaj si Draft</button>
+      <button class="btn-submit" onclick="submitReport()">⚡ Gjenero Score + PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DETAIL PANEL ─── -->
+<div class="detail-panel" id="detail-panel">
+  <div class="dp-header">
+    <div class="dp-title" id="dp-title">Detajet e Raportit</div>
+    <div class="modal-close" onclick="closeDetail()">✕</div>
+  </div>
+  <div class="dp-body">
+    <div class="dp-score-big">
+      <div class="dp-score-num" id="dp-score">78</div>
+      <div class="dp-score-label">IAQ Score / 100</div>
+      <div class="dp-verdict" id="dp-verdict" style="color:var(--green);">MIRË</div>
+    </div>
+    <div class="dp-section-title">Parametrat e Matura</div>
+    <div id="dp-params"></div>
+    <div class="dp-ai">
+      <div class="dp-ai-label">🤖 Analiza AI</div>
+      <div class="dp-ai-text" id="dp-ai-text">Ajri është brenda parametrave të pranueshëm. PM2.5 po i afrohet kufirit WHO (25 µg/m³) — rekomandohet instalim filtri HEPA ose sistem HRV me pre-filtra. Ventilimi natyror nuk mjafton gjatë sezonit të nxehtë.</div>
+    </div>
+  </div>
+  <div class="dp-footer">
+    <button class="dp-btn dp-btn-ghost">📧 Dërgo PDF</button>
+    <button class="dp-btn dp-btn-gold">⬇ Shkarko PDF</button>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✅</span>
+  <span class="toast-text" id="toast-text">Raporti u gjenerua me sukses!</span>
+</div>
+
+<script>
+// ─── DATA ───
+const reports = [
+  {id:1,name:"Zyrë 3A",client:"Hapi Group SH.P.K.",date:"08 Maj 2026",score:78,co2:842,pm:18,status:"sent",ai:"PM2.5 po i afrohet kufirit WHO. Rekomandohet filtar HEPA ose HRV."},
+  {id:2,name:"Apartamenti 4B",client:"Rezidenca Panorama",date:"06 Maj 2026",score:91,co2:680,pm:9,status:"sent",ai:"Cilësi shkëlqyese. Lagështia ideale. Asnjë ndërhyrje e menjëhershme e nevojshme."},
+  {id:3,name:"Salla e Konferencave",client:"Bashkia Tiranë",date:"03 Maj 2026",score:54,co2:1420,pm:34,status:"done",ai:"CO₂ e lartë shumë. Nevojitet ventilim mekanik me HRV. Kapaciteti i sallës duhet reduktuar."},
+  {id:4,name:"Çerdhe Lulishtja",client:"Çerdhe Lulishtja",date:"01 Maj 2026",score:67,co2:950,pm:22,status:"draft",ai:"CO₂ në nivel kufiri. Rekomandohet ajrosje çdo 2 orë dhe sensor i vazhdueshëm."},
+  {id:5,name:"Recepsioni",client:"Hotel Tirana Int.",date:"29 Prill 2026",score:83,co2:720,pm:14,status:"sent",ai:"Parametra të mirë. Temperatura pak e lartë (23.8°C). Rregulloni termostat."},
+  {id:6,name:"Kuzhinë Kat 2",client:"Kinema Millennium",date:"27 Prill 2026",score:48,co2:1680,pm:41,status:"done",ai:"Nivel kritik CO₂ dhe PM2.5. Sistemi i aspirimit të tymit jofunksional. Mbyllje teknike e rekomanduar."},
+  {id:7,name:"Sallë Gjumi",client:"Rezidenca Panorama",date:"24 Prill 2026",score:88,co2:710,pm:11,status:"sent",ai:"Cilësi shumë e mirë. TVOC pak i ngritur — verifikoni produktet e pastrimit."},
+  {id:8,name:"Open Space Kat 3",client:"Hapi Group SH.P.K.",date:"20 Prill 2026",score:72,co2:890,pm:19,status:"sent",ai:"CO₂ në nivel të pranueshëm. Densiteti i lartë i punëtorëve rekomandohet të monitorohet."},
+];
+
+const clients = [
+  {id:1,name:"Hapi Group SH.P.K.",type:"Zyrë Korporative",av:"HG",reports:8,avgScore:75,color:"#c8a84b"},
+  {id:2,name:"Rezidenca Panorama",type:"Rezidencë",av:"RP",reports:6,avgScore:89,color:"#3ecf8e"},
+  {id:3,name:"Bashkia Tiranë",type:"Institucion Publik",av:"BT",reports:5,avgScore:58,color:"#e05252"},
+  {id:4,name:"Hotel Tirana Int.",type:"Hoteleri",av:"HT",reports:7,avgScore:82,color:"#4ea8e0"},
+  {id:5,name:"Kinema Millennium",type:"Kulturë / Argëtim",av:"KM",reports:4,avgScore:61,color:"#e0c052"},
+  {id:6,name:"Çerdhe Lulishtja",type:"Arsim & Fëmijë",av:"CL",reports:3,avgScore:67,color:"#b06ee8"},
+];
+
+// ─── RENDER ───
+function scorePill(s){
+  if(s>=85) return `<span class="score-pill score-ex">${s}</span>`;
+  if(s>=70) return `<span class="score-pill score-good">${s}</span>`;
+  if(s>=55) return `<span class="score-pill score-ok">${s}</span>`;
+  return `<span class="score-pill score-bad">${s}</span>`;
+}
+function statusChip(st){
+  const m={sent:'<span class="status-chip chip-sent">Dërguar</span>',done:'<span class="status-chip chip-done">Kompletuar</span>',draft:'<span class="status-chip chip-draft">Draft</span>'};
+  return m[st]||'';
+}
+function renderRecentReports(){
+  const tbody=document.getElementById('recent-reports-body');
+  tbody.innerHTML=reports.slice(0,5).map(r=>`
+    <tr onclick="openDetail(${r.id})">
+      <td><div class="report-name">${r.name}</div><div class="report-client">${r.client}</div></td>
+      <td>${scorePill(r.score)}</td>
+      <td class="report-date">${r.date}</td>
+      <td>${statusChip(r.status)}</td>
+      <td>
+        <span class="action-icon" title="Shkarko PDF">⬇</span>
+        <span class="action-icon" title="Dërgo Email">📧</span>
+      </td>
+    </tr>`).join('');
+}
+function renderAllReports(){
+  const tbody=document.getElementById('all-reports-body');
+  tbody.innerHTML=reports.map(r=>`
+    <tr onclick="openDetail(${r.id})">
+      <td><div class="report-name">${r.name}</div><div class="report-client">${r.client}</div></td>
+      <td>${scorePill(r.score)}</td>
+      <td class="report-date" style="font-family:'DM Mono',monospace;">${r.co2} ppm</td>
+      <td class="report-date" style="font-family:'DM Mono',monospace;">${r.pm} µg/m³</td>
+      <td class="report-date">${r.date}</td>
+      <td>${statusChip(r.status)}</td>
+      <td>
+        <span class="action-icon">⬇</span>
+        <span class="action-icon">📧</span>
+      </td>
+    </tr>`).join('');
+}
+function renderTopClients(){
+  const el=document.getElementById('top-clients');
+  el.innerHTML=clients.slice(0,4).map(c=>{
+    const sc=c.avgScore;
+    const col=sc>=80?'var(--green)':sc>=65?'var(--gold)':'var(--red)';
+    return `<div class="client-item">
+      <div class="client-av">${c.av}</div>
+      <div><div class="client-name">${c.name}</div><div class="client-type">${c.reports} raporte</div></div>
+      <div class="client-score-wrap"><div class="client-score-num" style="color:${col}">${sc}</div><div class="client-score-label">Score</div></div>
+    </div>`;
+  }).join('');
+}
+function renderClients(){
+  const el=document.getElementById('clients-grid');
+  el.innerHTML=clients.map(c=>{
+    const sc=c.avgScore;
+    const col=sc>=80?'var(--green)':sc>=65?'var(--gold)':'var(--red)';
+    return `<div class="client-card">
+      <div class="cc-header">
+        <div class="cc-avatar" style="border-color:${c.color};color:${c.color};">${c.av}</div>
+        <div><div class="cc-name">${c.name}</div><div class="cc-type">${c.type}</div></div>
+      </div>
+      <div class="cc-stats">
+        <div><div class="cc-stat-label">Raporte</div><div class="cc-stat-val" style="color:var(--white)">${c.reports}</div></div>
+        <div><div class="cc-stat-label">Avg Score</div><div class="cc-stat-val" style="color:${col}">${sc}</div></div>
+        <div><div class="cc-stat-label">Statusi</div><div class="cc-stat-val" style="color:var(--green);font-size:0.75rem;margin-top:4px;">Aktiv</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── NAVIGATION ───
+const titles={dashboard:'Dashboard / Kryefaqja',reports:'Raporte / Të gjitha',clients:'Klientët / Portofoli',import:'Mjete / Importo Excel',score:'Mjete / Score Engine',settings:'Llogaria / Cilësimet'};
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`[data-view="${v}"]`)?.classList.add('active');
+  document.getElementById('topbar-title').innerHTML=titles[v]?.replace(' / ','<span> / ')+'</span>'||v;
+}
+document.querySelectorAll('.sb-item[data-view]').forEach(item=>{
+  item.addEventListener('click',()=>switchView(item.dataset.view));
+});
+
+// ─── MODAL ───
+function openModal(){
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('report-date').value=new Date().toISOString().split('T')[0];
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+function submitReport(){
+  closeModal();
+  setTimeout(()=>showToast('Raporti u gjenerua me sukses! Score: 74 · PDF gati ✓'),200);
+}
+
+// ─── DETAIL PANEL ───
+function openDetail(id){
+  const r=reports.find(x=>x.id===id);if(!r)return;
+  document.getElementById('dp-title').textContent=r.name+' — '+r.client;
+  document.getElementById('dp-score').textContent=r.score;
+  const col=r.score>=85?'var(--green)':r.score>=70?'var(--blue)':r.score>=55?'var(--yellow)':'var(--red)';
+  const grade=r.score>=85?'SHKËLQYER':r.score>=70?'MIRË':r.score>=55?'MESATAR':'DOBËT';
+  document.getElementById('dp-score').style.color=col;
+  document.getElementById('dp-verdict').textContent=grade;
+  document.getElementById('dp-verdict').style.color=col;
+  document.getElementById('dp-ai-text').textContent=r.ai;
+  const params=[
+    {name:'CO₂',val:r.co2+' ppm',pct:Math.min(r.co2/2000*100,100),col:r.co2<1000?'var(--green)':r.co2<1500?'var(--yellow)':'var(--red)',status:r.co2<1000?'✓ OK':'⚠'},
+    {name:'PM2.5',val:r.pm+' µg/m³',pct:Math.min(r.pm/50*100,100),col:r.pm<15?'var(--green)':r.pm<25?'var(--yellow)':'var(--red)',status:r.pm<25?'✓':'⚠'},
+    {name:'TVOC',val:'0.24 mg/m³',pct:32,col:'var(--green)',status:'✓'},
+    {name:'Lagështia',val:'52 %RH',pct:78,col:'var(--green)',status:'✓'},
+    {name:'Temp',val:'22.4 °C',pct:82,col:'var(--green)',status:'✓'},
+  ];
+  document.getElementById('dp-params').innerHTML=params.map(p=>`
+    <div class="dp-param">
+      <span class="dp-param-name">${p.name}</span>
+      <div class="dp-bar"><div class="dp-fill" style="width:${p.pct}%;background:${p.col};"></div></div>
+      <span class="dp-param-val">${p.val}</span>
+      <span class="dp-status" style="color:${p.col}">${p.status}</span>
+    </div>`).join('');
+  document.getElementById('detail-panel').classList.add('open');
+}
+function closeDetail(){document.getElementById('detail-panel').classList.remove('open');}
+
+// ─── TOAST ───
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-text').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ─── SCORE ENGINE LIVE ───
+function calcScore(){
+  const co2=parseFloat(document.getElementById('sc-co2')?.value)||800;
+  const pm=parseFloat(document.getElementById('sc-pm')?.value)||15;
+  const tvoc=parseFloat(document.getElementById('sc-tvoc')?.value)||0.2;
+  const rh=parseFloat(document.getElementById('sc-rh')?.value)||50;
+  const temp=parseFloat(document.getElementById('sc-temp')?.value)||22;
+  let s=100;
+  if(co2>1500)s-=30;else if(co2>1000)s-=18;else if(co2>800)s-=8;
+  if(pm>35)s-=30;else if(pm>25)s-=18;else if(pm>15)s-=8;
+  if(tvoc>0.6)s-=20;else if(tvoc>0.3)s-=10;
+  if(rh<30||rh>70)s-=12;else if(rh<40||rh>60)s-=5;
+  if(temp<18||temp>26)s-=8;else if(temp<20||temp>24)s-=3;
+  s=Math.max(0,Math.min(100,Math.round(s)));
+  const el=document.getElementById('live-score-num');
+  const gl=document.getElementById('live-score-grade');
+  const nl=document.getElementById('live-score-note');
+  if(!el)return;
+  el.textContent=s;
+  const col=s>=85?'var(--green)':s>=70?'var(--blue)':s>=55?'var(--yellow)':'var(--red)';
+  el.style.color=col;
+  const grades={85:['SHKËLQYER','Cilësi e shkëlqyer. Asnjë ndërhyrje e nevojshme.'],70:['MIRË','Parametrat janë në norma. Monitorim periodik i rekomanduar.'],55:['MESATAR','Disa parametra jashtë normës. Ventilim shtesë i nevojshëm.'],0:['DOBËT','Nivel kritik. Ndërhyrje teknike e menjëhershme e nevojshme.']};
+  const key=s>=85?85:s>=70?70:s>=55?55:0;
+  gl.textContent=grades[key][0];gl.style.color=col;
+  nl.textContent=grades[key][1];
+}
+
+// ─── FILTER BUTTONS ───
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    this.closest('.filter-row').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ─── INIT ───
+renderRecentReports();
+renderAllReports();
+renderTopClients();
+renderClients();
+</script>
+</body>
+</html>

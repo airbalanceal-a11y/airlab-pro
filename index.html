@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AirLab Pro — Platforma IAQ Profesionale | by AirBalance Albania</title>
+<meta name="description" content="Vlerësim profesional IAQ me Score Engine, analizë AI dhe raporte PDF sipas ASHRAE 62.1, WHO IAQ dhe EN 16798. Platforma shqiptare për cilësinë e ajrit të brendshëm."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy: #080f1e;
+  --navy-2: #0d1628;
+  --navy-3: #111d35;
+  --navy-4: #162240;
+  --gold: #c8a84b;
+  --gold-light: #e2c47a;
+  --gold-dim: rgba(200,168,75,0.15);
+  --gold-border: rgba(200,168,75,0.25);
+  --white: #f0eeea;
+  --white-dim: rgba(240,238,234,0.6);
+  --white-faint: rgba(240,238,234,0.15);
+  --green: #3ecf8e;
+  --red: #e05252;
+  --radius: 10px;
+  --radius-lg: 18px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{
+  background:var(--navy);
+  color:var(--white);
+  font-family:'Sora',sans-serif;
+  font-weight:400;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+
+/* ── Noise texture overlay ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:0.4;
+}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
+  height:64px;
+  background:rgba(8,15,30,0.85);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--gold-border);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  text-decoration:none;
+}
+.nav-logo-icon{
+  width:34px;height:34px;
+  background:var(--gold);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:var(--navy);
+}
+.nav-logo-text{
+  font-size:1rem;font-weight:700;color:var(--white);letter-spacing:-0.02em;
+}
+.nav-logo-text span{color:var(--gold);}
+.nav-links{
+  display:flex;align-items:center;gap:28px;
+  list-style:none;
+}
+.nav-links a{
+  color:var(--white-dim);text-decoration:none;font-size:0.875rem;
+  font-weight:500;transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{display:flex;align-items:center;gap:10px;}
+.btn-ghost{
+  background:transparent;border:1px solid var(--gold-border);
+  color:var(--white-dim);padding:8px 18px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:0.8rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-primary{
+  background:var(--gold);border:none;
+  color:var(--navy);padding:8px 20px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:0.8rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;
+  letter-spacing:0.01em;
+}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:120px 5% 80px;
+  position:relative;
+}
+/* Radial glow */
+.hero::after{
+  content:'';position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-55%);
+  width:700px;height:500px;
+  background:radial-gradient(ellipse,rgba(200,168,75,0.12) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gold-dim);
+  border:1px solid var(--gold-border);
+  border-radius:100px;
+  padding:5px 14px;
+  font-size:0.75rem;font-weight:600;
+  color:var(--gold-light);
+  letter-spacing:0.05em;text-transform:uppercase;
+  margin-bottom:28px;
+  position:relative;z-index:1;
+  animation:fadeUp 0.6s ease both;
+}
+.hero-badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--gold);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+
+.hero h1{
+  font-size:clamp(2.2rem,5.5vw,4rem);
+  font-weight:800;
+  line-height:1.12;
+  letter-spacing:-0.04em;
+  color:var(--white);
+  max-width:820px;
+  margin:0 auto 20px;
+  position:relative;z-index:1;
+  animation:fadeUp 0.7s 0.1s ease both;
+}
+.hero h1 em{
+  font-style:normal;
+  color:var(--gold);
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--white-dim);
+  max-width:560px;margin:0 auto 40px;
+  font-weight:400;line-height:1.7;
+  position:relative;z-index:1;
+  animation:fadeUp 0.7s 0.2s ease both;
+}
+.hero-actions{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  flex-wrap:wrap;
+  position:relative;z-index:1;
+  animation:fadeUp 0.7s 0.3s ease both;
+}
+.btn-hero{
+  background:var(--gold);border:none;
+  color:var(--navy);padding:14px 32px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:0.95rem;font-weight:700;
+  cursor:pointer;transition:all 0.25s;text-decoration:none;
+  letter-spacing:0.01em;
+}
+.btn-hero:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(200,168,75,0.3);}
+.btn-hero-outline{
+  background:transparent;border:1px solid var(--gold-border);
+  color:var(--white);padding:14px 28px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:0.95rem;font-weight:600;
+  cursor:pointer;transition:all 0.25s;text-decoration:none;
+  display:flex;align-items:center;gap:8px;
+}
+.btn-hero-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* Standards row */
+.hero-standards{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  flex-wrap:wrap;
+  margin-top:48px;
+  position:relative;z-index:1;
+  animation:fadeUp 0.7s 0.4s ease both;
+}
+.std-badge{
+  background:var(--navy-3);border:1px solid rgba(200,168,75,0.2);
+  border-radius:6px;padding:5px 12px;
+  font-size:0.72rem;font-weight:600;color:var(--gold);
+  letter-spacing:0.05em;font-family:'DM Mono',monospace;
+}
+
+/* ── STATS ── */
+.stats{
+  display:flex;justify-content:center;gap:0;
+  flex-wrap:wrap;
+  border-top:1px solid var(--gold-border);
+  border-bottom:1px solid var(--gold-border);
+  background:var(--navy-2);
+  margin:0 5%;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+}
+.stat-item{
+  flex:1;min-width:180px;
+  padding:36px 24px;text-align:center;
+  border-right:1px solid var(--gold-border);
+  position:relative;
+}
+.stat-item:last-child{border-right:none;}
+.stat-num{
+  font-size:2.2rem;font-weight:800;color:var(--gold);
+  letter-spacing:-0.03em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.stat-label{
+  font-size:0.8rem;color:var(--white-dim);margin-top:6px;font-weight:500;
+}
+
+/* ── SECTIONS COMMON ── */
+section{padding:90px 5%;position:relative;}
+.section-label{
+  font-size:0.72rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::before{
+  content:'';width:24px;height:1px;background:var(--gold);
+}
+h2.section-title{
+  font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;
+  letter-spacing:-0.04em;color:var(--white);
+  line-height:1.15;margin-bottom:14px;
+}
+.section-desc{
+  font-size:1rem;color:var(--white-dim);max-width:560px;
+  line-height:1.7;margin-bottom:56px;
+}
+
+/* ── WHY IAQ ── */
+.why-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1px;background:var(--gold-border);border:1px solid var(--gold-border);
+  border-radius:var(--radius-lg);overflow:hidden;
+}
+.why-card{
+  background:var(--navy-2);padding:36px 30px;
+  transition:background 0.2s;
+}
+.why-card:hover{background:var(--navy-3);}
+.why-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--gold-dim);border:1px solid var(--gold-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:18px;
+}
+.why-card h3{font-size:1.05rem;font-weight:700;color:var(--white);margin-bottom:10px;letter-spacing:-0.02em;}
+.why-card p{font-size:0.875rem;color:var(--white-dim);line-height:1.65;}
+
+/* ── DEMO MOCKUP ── */
+.demo-section{background:var(--navy-2);border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);}
+.demo-container{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+}
+.demo-text h2{margin-bottom:10px;}
+.demo-text .section-desc{margin-bottom:32px;}
+.demo-features{display:flex;flex-direction:column;gap:16px;}
+.demo-feat{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:16px 18px;
+  background:var(--navy-3);border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+}
+.demo-feat-icon{
+  font-size:18px;min-width:32px;height:32px;
+  background:var(--gold-dim);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+}
+.demo-feat-content h4{font-size:0.875rem;font-weight:700;color:var(--white);margin-bottom:3px;}
+.demo-feat-content p{font-size:0.8rem;color:var(--white-dim);}
+
+/* Score mockup */
+.score-mockup{
+  background:var(--navy-3);border:1px solid var(--gold-border);
+  border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.5);
+}
+.score-mockup-header{
+  background:var(--navy-4);padding:16px 20px;
+  border-bottom:1px solid var(--gold-border);
+  display:flex;align-items:center;gap:8px;
+}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#e05252;} .dot.y{background:#e0c052;} .dot.g{background:#3ecf8e;}
+.mockup-title{font-size:0.75rem;color:var(--white-dim);margin-left:6px;font-family:'DM Mono',monospace;}
+.score-mockup-body{padding:28px 24px;}
+.score-report-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.score-report-name{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:20px;}
+/* Big score circle */
+.score-circle-wrap{display:flex;align-items:center;gap:24px;margin-bottom:24px;}
+.score-circle{
+  width:80px;height:80px;border-radius:50%;
+  background:conic-gradient(var(--gold) 0% 78%, var(--navy-4) 78% 100%);
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.score-circle-inner{
+  width:62px;height:62px;border-radius:50%;
+  background:var(--navy-3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.score-num{font-size:1.25rem;font-weight:800;color:var(--gold);line-height:1;}
+.score-label{font-size:0.55rem;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.05em;}
+.score-verdict{flex:1;}
+.score-verdict-grade{font-size:1.5rem;font-weight:800;color:var(--green);letter-spacing:-0.03em;}
+.score-verdict-text{font-size:0.8rem;color:var(--white-dim);}
+/* Parameters */
+.param-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.param-name{font-size:0.8rem;color:var(--white-dim);flex:1;font-family:'DM Mono',monospace;}
+.param-val{font-size:0.85rem;font-weight:700;color:var(--white);width:80px;text-align:right;}
+.param-bar{flex:2;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+.param-fill{height:100%;border-radius:3px;transition:width 1s;}
+.param-fill.good{background:var(--green);}
+.param-fill.warn{background:#e0c052;}
+.param-fill.bad{background:var(--red);}
+.param-status{font-size:0.7rem;font-weight:600;width:48px;text-align:right;}
+.status-good{color:var(--green);}
+.status-warn{color:#e0c052;}
+.status-bad{color:var(--red);}
+
+/* ── FEATURES ── */
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+.feat-card{
+  background:var(--navy-2);border:1px solid var(--gold-border);
+  border-radius:var(--radius-lg);padding:32px 26px;
+  transition:all 0.25s;position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.feat-card:hover{border-color:rgba(200,168,75,0.5);transform:translateY(-3px);}
+.feat-card:hover::before{opacity:1;}
+.feat-num{
+  font-family:'DM Mono',monospace;font-size:0.7rem;
+  color:var(--gold-border);font-weight:500;margin-bottom:20px;
+  letter-spacing:0.05em;
+}
+.feat-card h3{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:10px;letter-spacing:-0.02em;}
+.feat-card p{font-size:0.85rem;color:var(--white-dim);line-height:1.65;}
+.feat-tag{
+  display:inline-block;
+  background:var(--gold-dim);border:1px solid var(--gold-border);
+  border-radius:4px;padding:2px 8px;
+  font-size:0.68rem;font-weight:700;color:var(--gold);
+  letter-spacing:0.04em;text-transform:uppercase;
+  margin-top:16px;
+}
+
+/* ── PRICING ── */
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;align-items:start;
+}
+.pricing-card{
+  background:var(--navy-2);border:1px solid var(--gold-border);
+  border-radius:var(--radius-lg);padding:32px;
+  position:relative;
+}
+.pricing-card.featured{
+  background:var(--navy-3);border-color:var(--gold);
+  box-shadow:0 0 0 1px var(--gold), 0 20px 60px rgba(200,168,75,0.15);
+}
+.featured-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:var(--navy);
+  font-size:0.68rem;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;
+  padding:4px 14px;border-radius:100px;white-space:nowrap;
+}
+.plan-name{font-size:0.8rem;font-weight:700;color:var(--gold);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;}
+.plan-price{
+  font-size:2.4rem;font-weight:800;color:var(--white);
+  letter-spacing:-0.04em;line-height:1;margin-bottom:4px;
+}
+.plan-price sup{font-size:1rem;font-weight:600;vertical-align:super;}
+.plan-price-note{font-size:0.8rem;color:var(--white-dim);margin-bottom:6px;}
+.plan-price-all{font-size:0.75rem;color:var(--gold-dim);font-family:'DM Mono',monospace;margin-bottom:24px;color:rgba(200,168,75,0.6);}
+.plan-divider{height:1px;background:var(--gold-border);margin-bottom:24px;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:28px;}
+.plan-features li{
+  display:flex;align-items:center;gap:10px;
+  font-size:0.84rem;color:var(--white-dim);
+}
+.plan-features li::before{
+  content:'✓';color:var(--gold);font-weight:700;font-size:0.75rem;
+  background:var(--gold-dim);width:18px;height:18px;
+  border-radius:4px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.plan-features li.no::before{content:'—';color:rgba(255,255,255,0.2);background:transparent;}
+.plan-features li.no{opacity:0.5;}
+.btn-plan{
+  width:100%;padding:12px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:0.875rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;text-align:center;
+  text-decoration:none;display:block;
+}
+.btn-plan-ghost{background:transparent;border:1px solid var(--gold-border);color:var(--white);}
+.btn-plan-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-plan-gold{background:var(--gold);border:none;color:var(--navy);}
+.btn-plan-gold:hover{background:var(--gold-light);}
+
+/* ── TESTIMONIALS ── */
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.testimonial-card{
+  background:var(--navy-2);border:1px solid var(--gold-border);
+  border-radius:var(--radius-lg);padding:28px;
+}
+.testimonial-quote{font-size:1.3rem;color:var(--gold);margin-bottom:14px;}
+.testimonial-text{font-size:0.875rem;color:var(--white-dim);line-height:1.7;margin-bottom:20px;}
+.testimonial-author{display:flex;align-items:center;gap:12px;}
+.testimonial-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--gold-dim);border:2px solid var(--gold-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;color:var(--gold);
+}
+.testimonial-name{font-size:0.85rem;font-weight:700;color:var(--white);}
+.testimonial-role{font-size:0.75rem;color:var(--white-dim);}
+
+/* ── FAQ ── */
+.faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+.faq-item{
+  background:var(--navy-2);border:1px solid var(--gold-border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.faq-q{
+  width:100%;background:none;border:none;color:var(--white);
+  font-family:'Sora',sans-serif;font-size:0.95rem;font-weight:600;
+  text-align:left;padding:20px 24px;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  transition:color 0.2s;
+}
+.faq-q:hover{color:var(--gold);}
+.faq-arrow{
+  font-size:0.75rem;color:var(--gold);
+  transition:transform 0.3s;flex-shrink:0;
+  background:var(--gold-dim);width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+.faq-a{
+  display:none;padding:0 24px 20px;
+  font-size:0.875rem;color:var(--white-dim);line-height:1.75;
+  border-top:1px solid var(--gold-border);padding-top:16px;
+}
+.faq-item.open .faq-a{display:block;}
+
+/* ── CTA BANNER ── */
+.cta-banner{
+  background:linear-gradient(135deg,var(--navy-3),var(--navy-4));
+  border:1px solid var(--gold-border);border-radius:var(--radius-lg);
+  padding:70px 5%;text-align:center;margin:0 5% 80px;
+  position:relative;overflow:hidden;
+}
+.cta-banner::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(ellipse at center,rgba(200,168,75,0.08),transparent 60%);
+  pointer-events:none;
+}
+.cta-banner h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:-0.04em;margin-bottom:14px;}
+.cta-banner p{color:var(--white-dim);font-size:1rem;max-width:500px;margin:0 auto 36px;}
+.cta-actions{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--gold-border);
+  padding:40px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:20px;
+}
+.footer-left{display:flex;flex-direction:column;gap:6px;}
+.footer-brand{font-size:0.9rem;font-weight:700;color:var(--white);}
+.footer-brand span{color:var(--gold);}
+.footer-made{font-size:0.75rem;color:var(--white-dim);}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+.footer-links a{font-size:0.8rem;color:var(--white-dim);text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--gold);}
+.footer-right{font-size:0.75rem;color:rgba(240,238,234,0.35);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.fade-in.visible{opacity:1;transform:none;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .demo-container{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:repeat(2,1fr);}
+  .pricing-grid{grid-template-columns:1fr;}
+  .testimonials-grid{grid-template-columns:1fr;}
+  .stats{margin:0;}
+  .nav-links{display:none;}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr;}
+  .stat-item{min-width:50%;}
+  footer{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">A</div>
+    <div class="nav-logo-text">AirLab <span>Pro</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Veçoritë</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#pricing">Çmimet</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a class="btn-ghost" href="/login?mode=signin">Hyr</a>
+    <a class="btn-primary" href="/login?mode=signup">Fillo falas</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge"><div class="hero-badge-dot"></div>by AirBalance Albania</div>
+  <h1>Raporte IAQ profesionale<br/>në <em>minuta</em>, jo ditë</h1>
+  <p class="hero-sub">
+    AirLab Pro automatizon vlerësimin e Cilësisë së Ajrit të Brendshëm sipas ASHRAE 62.1, WHO IAQ dhe EN 16798.
+    Score Engine, analizë AI, eksport PDF — të gjitha në një platformë.
+  </p>
+  <div class="hero-actions">
+    <a class="btn-hero" href="/login?mode=signup">Fillo falas — 0 €/muaj</a>
+    <a class="btn-hero-outline" href="#demo">
+      <span>▶</span> Shiko demo-n
+    </a>
+  </div>
+  <div class="hero-standards">
+    <span class="std-badge">ASHRAE 62.1</span>
+    <span class="std-badge">WHO IAQ 2021</span>
+    <span class="std-badge">EN 16798</span>
+    <span class="std-badge">ISO 16000</span>
+    <span class="std-badge">EN 13779</span>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats fade-in">
+  <div class="stat-item">
+    <div class="stat-num">500+</div>
+    <div class="stat-label">Raporte të gjeneruara</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">40+</div>
+    <div class="stat-label">Profesionistë aktivë</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Standarde ndërkombëtare</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">4.9★</div>
+    <div class="stat-label">Vlerësim mesatar</div>
+  </div>
+</div>
+
+<!-- ── WHY IAQ ── -->
+<section id="why" style="padding-top:90px;">
+  <div class="section-label">Pse IAQ</div>
+  <h2 class="section-title">Cilësia e ajrit nuk<br/>është opsionale</h2>
+  <p class="section-desc">Njerëzit kalojnë 90% të kohës brenda. Ajri i keq prek shëndetin, fokusin dhe produktivitetin — por pak e matin atë seriozisht.</p>
+  <div class="why-grid fade-in">
+    <div class="why-card">
+      <div class="why-icon">🫁</div>
+      <h3>Ndikon shëndetin direkt</h3>
+      <p>CO₂ e lartë, PM2.5 dhe TVOC shkaktojnë dhimbje koke, lodhje dhe probleme respiratore. WHO i dokumenton qartë efektet.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🧠</div>
+      <h3>Produktivitet −20%</h3>
+      <p>Studime të Harvard tregojnë se CO₂ mbi 1000 ppm ul vendimmarrjen kognitive me deri 20% — pa e kuptuar fare.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">⚖️</div>
+      <h3>Detyrim ligjor në rritje</h3>
+      <p>Standardet EU dhe ASHRAE bëhen gjithnjë e më shumë kusht për certifikime, qiradhënie dhe kolaudim ndërtese.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">📊</div>
+      <h3>Të dhëna, jo supozime</h3>
+      <p>Matje me sensor, analizë sipas standardit dhe raport profesional — klienti merr prova konkrete, jo opinion.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEMO / SCORE ── -->
+<section id="demo" class="demo-section">
+  <div class="demo-container">
+    <div class="demo-text fade-in">
+      <div class="section-label">Score Engine</div>
+      <h2 class="section-title">Një numër.<br/>Pesë parametra.</h2>
+      <p class="section-desc">Score Engine kombinon CO₂, PM2.5, TVOC, lagështi dhe temperaturë në një IAQ Score 0–100 sipas peshimit ASHRAE/WHO. Çdo vlerësim vjen me rekomandime konkrete.</p>
+      <div class="demo-features">
+        <div class="demo-feat">
+          <div class="demo-feat-icon">📥</div>
+          <div class="demo-feat-content">
+            <h4>Import nga Excel / sensor</h4>
+            <p>Ngarko matjet direkt nga Temtop, Aranet ose çdo senzor .xlsx</p>
+          </div>
+        </div>
+        <div class="demo-feat">
+          <div class="demo-feat-icon">🤖</div>
+          <div class="demo-feat-content">
+            <h4>Analizë me AI</h4>
+            <p>Rekomandime të personalizuara për çdo dhomë bazuar në matjet aktuale</p>
+          </div>
+        </div>
+        <div class="demo-feat">
+          <div class="demo-feat-icon">📄</div>
+          <div class="demo-feat-content">
+            <h4>PDF 4-faqësh profesional</h4>
+            <p>Kopertinë, tabelë, grafike dhe rekomandime — gati për klientin</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Score Mockup -->
+    <div class="score-mockup fade-in">
+      <div class="score-mockup-header">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <div class="mockup-title">airlab-pro · score-engine v2.0</div>
+      </div>
+      <div class="score-mockup-body">
+        <div class="score-report-label">Raporti IAQ</div>
+        <div class="score-report-name">Zyrë 3A — Rr. Dëshmorët e Kombit, Tiranë</div>
+        <div class="score-circle-wrap">
+          <div class="score-circle">
+            <div class="score-circle-inner">
+              <div class="score-num">78</div>
+              <div class="score-label">/ 100</div>
+            </div>
+          </div>
+          <div class="score-verdict">
+            <div class="score-verdict-grade">MIRË</div>
+            <div class="score-verdict-text">Parametrat janë brenda kufijve. Rekomandohet HRV për ventilim të vazhdueshëm.</div>
+          </div>
+        </div>
+        <div class="param-row">
+          <span class="param-name">CO₂</span>
+          <span class="param-val">842 ppm</span>
+          <div class="param-bar"><div class="param-fill good" style="width:72%"></div></div>
+          <span class="param-status status-good">✓ OK</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">PM2.5</span>
+          <span class="param-val">18 µg/m³</span>
+          <div class="param-bar"><div class="param-fill warn" style="width:56%"></div></div>
+          <span class="param-status status-warn">⚠ Kufiri</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">TVOC</span>
+          <span class="param-val">0.24 mg/m³</span>
+          <div class="param-bar"><div class="param-fill good" style="width:40%"></div></div>
+          <span class="param-status status-good">✓ OK</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Lagështia</span>
+          <span class="param-val">52 %RH</span>
+          <div class="param-bar"><div class="param-fill good" style="width:80%"></div></div>
+          <span class="param-status status-good">✓ Ideal</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Temperatura</span>
+          <span class="param-val">22.4 °C</span>
+          <div class="param-bar"><div class="param-fill good" style="width:85%"></div></div>
+          <span class="param-status status-good">✓ Ideal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="section-label">Veçoritë</div>
+  <h2 class="section-title">Gjithçka që nevojitet<br/>për IAQ profesionale</h2>
+  <p class="section-desc">Nga matja e parë deri te raporti i dërguar — AirLab Pro mbulon të gjithë workflow-in.</p>
+  <div class="features-grid fade-in">
+    <div class="feat-card">
+      <div class="feat-num">01</div>
+      <h3>Score Engine i Çertifikuar</h3>
+      <p>Algoritëm i bazuar në ASHRAE 62.1, WHO IAQ 2021, EN 16798 dhe ISO 16000. Vlerëson CO₂, PM2.5, TVOC, lagështi dhe temperaturë në një numër 0–100.</p>
+      <div class="feat-tag">Core</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">02</div>
+      <h3>Analizë me AI</h3>
+      <p>Rekomandime të personalizuara për çdo hapësirë — bazuar në matjet aktuale dhe tipologjinë e ndërtesës. Jo sugjerime gjenerike.</p>
+      <div class="feat-tag">Pro</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">03</div>
+      <h3>Raport PDF Profesional</h3>
+      <p>Dokument 4-faqësh A4 me kopertinë, logon e kompanisë suaj, tabelë parametrash, grafike trendit dhe rekomandime — gati për klientin.</p>
+      <div class="feat-tag">Pro</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">04</div>
+      <h3>Dashboard & Historik</h3>
+      <p>Menaxho portofolin e plotë të klientëve, krahaso raporte, ndiq trendet dhe shiko historikun e matjeve në një vend.</p>
+      <div class="feat-tag">Pro</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">05</div>
+      <h3>Import nga Excel & Senzorë</h3>
+      <p>Ngarko matjet direkt nga Temtop M2000C, Aranet4, Sensirion ose çdo senzor tjetër në format .xlsx — pa re-entry manual.</p>
+      <div class="feat-tag">Pro</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">06</div>
+      <h3>Email Automatik</h3>
+      <p>Dërgo raportet me një klikim tek klienti. 5 template profesionale të integruara — branded me logon dhe nënshkrimin tuaj.</p>
+      <div class="feat-tag">Pro</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="testimonials" style="background:var(--navy-2);border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);">
+  <div class="section-label">Profesionistë flasin</div>
+  <h2 class="section-title">Çfarë thonë<br/>kolegu tanë</h2>
+  <p class="section-desc">Profesionistë IAQ, energjie dhe HVAC nga Shqipëria dhe Kosova.</p>
+  <div class="testimonials-grid fade-in">
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">Më parë i shkruaja raportet në Word — 3–4 orë punë. Me AirLab Pro e bëj brenda 15 minutave dhe duket shumë më profesional.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">AB</div>
+        <div>
+          <div class="testimonial-name">Ardit B.</div>
+          <div class="testimonial-role">Inxhinier HVAC, Tiranë</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">Score Engine-i sipas ASHRAE dhe WHO i jep raportit tonë autoritet. Klientët e kuptojnë numrin dhe besojnë rekomandimin.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">MK</div>
+        <div>
+          <div class="testimonial-name">Mira K.</div>
+          <div class="testimonial-role">Konsulente Mjedisi, Prishtinë</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">E rekomandoj çdo arkitekti apo studioje projektimi që ka nevojë të dëshmojë cilësinë e ajrit sipas standardeve europiane.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">ER</div>
+        <div>
+          <div class="testimonial-name">Erion R.</div>
+          <div class="testimonial-role">Arkitekt & Konsulent Energjie</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section id="pricing">
+  <div class="section-label">Çmimet</div>
+  <h2 class="section-title">Transparent.<br/>Pa surpriza.</h2>
+  <p class="section-desc">Fillo falas, përmirëso kur të jesh gati. Asnjë kontratë afatgjatë.</p>
+  <div class="pricing-grid fade-in">
+    <!-- Free -->
+    <div class="pricing-card">
+      <div class="plan-name">Falas</div>
+      <div class="plan-price"><sup></sup>0 €</div>
+      <div class="plan-price-note">/ muaj, përgjithmonë</div>
+      <div class="plan-price-all">≈ 0 Lekë / muaj</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>5 raporte në muaj</li>
+        <li>Score Engine (CO₂, PM2.5, TVOC, RH, T°)</li>
+        <li>Dashboard bazë</li>
+        <li class="no">Analizë me AI</li>
+        <li class="no">Export PDF branded</li>
+        <li class="no">Email automatik</li>
+        <li class="no">Import Excel</li>
+      </ul>
+      <a class="btn-plan btn-plan-ghost" href="/login?mode=signup">Regjistrohu falas</a>
+    </div>
+    <!-- Pro -->
+    <div class="pricing-card featured">
+      <div class="featured-badge">MË POPULLORI</div>
+      <div class="plan-name">Profesional</div>
+      <div class="plan-price"><sup>€</sup>9.99</div>
+      <div class="plan-price-note">/ muaj, faturim mujor</div>
+      <div class="plan-price-all">≈ 1,100 Lekë / muaj</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Raporte pa limit</li>
+        <li>Score Engine i plotë</li>
+        <li>Dashboard & historik i plotë</li>
+        <li>Analizë me AI për çdo dhomë</li>
+        <li>Export PDF branded (logoja juaj)</li>
+        <li>Email automatik (5 template)</li>
+        <li>Import Excel nga senzorë</li>
+      </ul>
+      <a class="btn-plan btn-plan-gold" href="/login?mode=signup">Fillo Pro — 14 ditë falas</a>
+    </div>
+    <!-- Enterprise -->
+    <div class="pricing-card">
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price"><sup>€</sup>49.99</div>
+      <div class="plan-price-note">/ muaj, multi-user</div>
+      <div class="plan-price-all">≈ 5,500 Lekë / muaj</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Gjithçka në Pro</li>
+        <li>Deri 10 përdorues / ekip</li>
+        <li>Admin Panel & roli</li>
+        <li>API qasje (REST)</li>
+        <li>Onboarding & support prioritar</li>
+        <li>White-label (branding i plotë)</li>
+        <li>SLA e garantuar</li>
+      </ul>
+      <a class="btn-plan btn-plan-ghost" href="mailto:info@airbalance.al">Na kontakto</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq" style="background:var(--navy-2);border-top:1px solid var(--gold-border);">
+  <div style="text-align:center;margin-bottom:50px;">
+    <div class="section-label" style="justify-content:center;">FAQ</div>
+    <h2 class="section-title">Pyetje të shpeshta</h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q">
+        Çfarë është IAQ dhe pse ka rëndësi?
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">
+        IAQ (Indoor Air Quality — Cilësia e Ajrit të Brendshëm) mat sasinë e ndotësve, CO₂, lagështisë dhe temperaturës në hapësirat ku jetojmë dhe punojmë.
+        Organizata Botërore e Shëndetit (WHO) e klasifikon ajrin e ndotur të brendshëm si një nga 10 rreziqet kryesore shëndetësore. Njerëzit kalojnë 85–90% të kohës brenda — kjo e bën IAQ-in kritik si për shëndetin individual ashtu edhe për produktivitetin e punës.
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        Cilat standarde përdor Score Engine?
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">
+        Score Engine-i është kalibruar sipas katër standardeve kryesore ndërkombëtare:
+        <br/><br/>
+        • <strong>ASHRAE 62.1</strong> — Ventilation for Acceptable Indoor Air Quality (vlerat referuese CO₂ dhe ACH)<br/>
+        • <strong>WHO IAQ Guidelines 2021</strong> — kufijtë e PM2.5, PM10, NO₂ dhe TVOC<br/>
+        • <strong>EN 16798-1</strong> — standardi europian për performancën energjetike dhe IAQ<br/>
+        • <strong>ISO 16000</strong> — metodologjia e matjes dhe analizës<br/><br/>
+        Çdo parameter peshohet sipas rëndësisë shëndetësore dhe Score final (0–100) reflekton rrezikun real.
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        A mund të importoj të dhëna nga senzorët e mi?
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">
+        Po. AirLab Pro pranon import Excel (.xlsx) nga senzorët më të zakonshëm:
+        Temtop M2000C, Aranet4, Sensirion SCD40, Airthings Wave Plus dhe çdo senzor tjetër që eksporton .xlsx ose .csv.
+        <br/><br/>
+        Template-i standard ka kolonat: timestamp, CO₂ (ppm), PM2.5 (µg/m³), TVOC (mg/m³), lagështi (%RH), temperaturë (°C). E ngarkoni, sistemi analizon automatikisht.
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        Si duket raporti PDF që gjenerohet?
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">
+        Raporti është 4 faqe A4, profesionale:
+        <br/><br/>
+        • <strong>Faqja 1:</strong> Kopertinë me logon e kompanisë suaj, emrin e klientit, datën dhe Score-in IAQ<br/>
+        • <strong>Faqja 2:</strong> Tabelë e parametrave me vlerat e matura, kufijt e standardit dhe status (OK / Kufiri / Alert)<br/>
+        • <strong>Faqja 3:</strong> Grafike trendit (24h ose 7 ditë) dhe analiza AI sipas dhomave<br/>
+        • <strong>Faqja 4:</strong> Rekomandime konkrete (HRV, filtra, ajrosje) dhe nënshkrimi i konsulentit<br/><br/>
+        Plani Pro lejon personalizim të plotë — logon tuaj, ngjyrën e brendit, footer-in.
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        A është falas të filloj? Sa zgjat trial-i?
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">
+        Plani Falas është permanent — 5 raporte në muaj pa kosto, pa kartë krediti.
+        <br/><br/>
+        Nëse zgjidhni planin Pro, keni <strong>14 ditë provë falas</strong> me qasje të plotë. Nëse nuk jeni të kënaqur, anuloni para ditës së 14-të dhe nuk faturoheni asgjë. Pa rrezik.
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        Kush e ka ndërtuar AirLab Pro?
+        <span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">
+        AirLab Pro është produkti SaaS i <strong>AirBalance Albania</strong> — startup shqiptar i specializuar në IAQ consulting, sisteme HRV/ERV dhe auditim të cilësisë së ajrit.
+        <br/><br/>
+        Themeluar nga profesionistë me eksperiencë në HVAC, standardet ASHRAE dhe ndërtim, AirBalance Albania shërben klientë rezidencialë dhe komercialë nëpër Shqipëri dhe Kosovë.
+        Kontakti: <a href="mailto:info@airbalance.al" style="color:var(--gold);">info@airbalance.al</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ── -->
+<section style="padding:0;">
+  <div class="cta-banner fade-in">
+    <h2>Gati për raportin tuaj të parë IAQ?</h2>
+    <p>Fillo falas sot. Pa kartë krediti, pa kontratë. Gjeneroni raportin e parë brenda 10 minutave.</p>
+    <div class="cta-actions">
+      <a class="btn-hero" href="/login?mode=signup">Krijo llogari falas</a>
+      <a class="btn-hero-outline" href="mailto:info@airbalance.al">Na kontakto</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-brand">AirLab <span>Pro</span></div>
+    <div class="footer-made">Produkt i <strong style="color:var(--gold-light);">AirBalance Albania</strong></div>
+    <div class="footer-made" style="font-family:'DM Mono',monospace;font-size:0.7rem;margin-top:4px;">ASHRAE 62.1 · WHO IAQ · EN 16798 · ISO 16000</div>
+  </div>
+  <div class="footer-links">
+    <a href="#features">Veçoritë</a>
+    <a href="#pricing">Çmimet</a>
+    <a href="#faq">FAQ</a>
+    <a href="/privacy">Politika e Privatësisë</a>
+    <a href="/terms">Kushtet e Shërbimit</a>
+    <a href="mailto:info@airbalance.al">Kontakt</a>
+  </div>
+  <div class="footer-right">© 2026 AirBalance Albania · Të gjitha të drejtat e rezervuara.</div>
+</footer>
+
+<script>
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const item=btn.closest('.faq-item');
+    const isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+    if(!isOpen) item.classList.add('open');
+  });
+});
+
+// Scroll fade-in
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
